@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none">
+  <path d="M8 12 L16 30 L24 12" stroke="#334155" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M16 12 L24 30 L32 12" stroke="#334155" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <text x="42" y="26" font-family="Inter, sans-serif" font-weight="800" font-size="16" fill="#334155" letter-spacing="-0.02em">Vertex Steel</text>
+</svg>
