@@ -19,12 +19,12 @@ export function PageContainer({ children, scrollable = false }: PageContainerPro
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 
-  const outerClasses = `flex-1 min-h-0 w-full flex flex-col overflow-hidden ${tokens.layout.pageMargin}`;
+  const outerClasses = `flex-1 min-h-0 max-lg:min-h-none w-full flex flex-col overflow-hidden max-lg:overflow-visible ${tokens.layout.pageMargin}`;
 
   if (scrollable) {
     return (
       <div className={outerClasses}>
-        <div className="flex-1 min-h-0 w-full flex flex-col overflow-y-auto overflow-x-hidden hide-scrollbar relative">
+        <div className="flex-1 min-h-0 max-lg:min-h-none w-full flex flex-col overflow-y-auto max-lg:overflow-visible overflow-x-hidden hide-scrollbar relative">
           {children}
         </div>
       </div>

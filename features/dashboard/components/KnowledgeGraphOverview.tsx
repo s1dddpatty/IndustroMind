@@ -32,7 +32,7 @@ export function KnowledgeGraphOverview({ data, className = "", onExpand }: Knowl
         </button>
       </div>
       
-      <div className="flex-1 relative -mx-6 -mb-4 overflow-hidden rounded-b-xl border-t border-slate-800/50">
+      <div className="flex-1 relative -mx-6 -mb-4 max-md:-mx-4 overflow-hidden rounded-b-xl border-t border-slate-800/50 max-md:min-h-[250px]">
         <div className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-b from-transparent to-slate-950/80" />
         <LightweightGraphPreview />
         

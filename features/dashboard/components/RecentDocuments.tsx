@@ -45,7 +45,7 @@ export function RecentDocuments({ data, onExpand, className = "" }: RecentDocume
       </div>
 
       {/* List */}
-      <div className="flex-1 flex flex-col space-y-2 min-h-0 overflow-hidden">
+      <div className="flex-1 flex flex-col space-y-2 min-h-0 max-lg:min-h-none overflow-hidden max-lg:overflow-visible">
         {recentDocs.map((doc) => (
           <div key={doc.id} className="flex items-center justify-between group">
             <div className="flex items-center gap-2.5 min-w-0">

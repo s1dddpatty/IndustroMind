@@ -34,7 +34,7 @@ export const Sidebar = memo(function Sidebar() {
 
       {/* Sidebar Container */}
       <aside className={`
-        w-[280px] flex-shrink-0 flex flex-col h-screen overflow-y-auto transition-all duration-300 z-50
+        w-[280px] max-md:w-[85vw] max-md:max-w-[320px] flex-shrink-0 flex flex-col h-screen overflow-y-auto transition-all duration-300 z-50
         ${navTokens.background} border-r ${navTokens.border}
         max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:bottom-0 max-lg:h-full max-lg:shadow-2xl
         ${isMobileSidebarOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full lg:translate-x-0'}
@@ -68,7 +68,7 @@ export const Sidebar = memo(function Sidebar() {
               href={item.href}
               prefetch={true}
               aria-current={isActive ? "page" : undefined}
-              className={`flex items-center gap-3 px-4 h-12 rounded-xl transition-colors duration-200 text-sm font-medium ${
+              className={`flex items-center gap-3 px-4 h-12 max-md:h-14 rounded-xl transition-colors duration-200 text-sm font-medium ${
                 isActive 
                   ? `${navTokens.activeBg} ${navTokens.activeText} shadow-sm` 
                   : `${navTokens.muted} ${navTokens.hover}`
@@ -95,7 +95,7 @@ export const Sidebar = memo(function Sidebar() {
                 href={item.href}
                 prefetch={true}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-3 px-4 h-12 rounded-xl transition-colors duration-200 text-sm font-medium ${
+                className={`flex items-center gap-3 px-4 h-12 max-md:h-14 rounded-xl transition-colors duration-200 text-sm font-medium ${
                   isActive 
                     ? `${navTokens.activeBg} ${navTokens.activeText} shadow-sm` 
                     : `${navTokens.muted} ${navTokens.hover}`

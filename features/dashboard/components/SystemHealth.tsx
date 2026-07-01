@@ -63,10 +63,10 @@ export function SystemHealth({ data, onExpand, className = "" }: SystemHealthPro
         </div>
       </div>
       
-      <div className="flex-1 flex items-center justify-between mt-1 min-h-0 overflow-hidden">
+      <div className="flex-1 flex items-center justify-between max-md:flex-col max-md:justify-center max-md:gap-6 mt-1 min-h-0 max-lg:min-h-none max-lg:h-auto overflow-hidden max-md:overflow-visible">
         
         {/* Left: Services List */}
-        <div className="flex-1 flex flex-col space-y-2 min-w-0 pr-4">
+        <div className="flex-1 flex flex-col space-y-2 min-w-0 pr-4 max-md:pr-0 max-md:w-full">
           {topServices.map(service => (
             <div key={service.id} className="flex items-center justify-between min-w-0">
               <div className="flex items-center gap-2 min-w-0">

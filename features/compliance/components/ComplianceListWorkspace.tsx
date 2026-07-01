@@ -87,7 +87,7 @@ export function ComplianceListWorkspace({ onSelectRule }: ComplianceListWorkspac
 
       {/* Enterprise Table */}
       <div className={`flex-1 rounded-2xl bg-slate-900/40 border ${tokens.card.border} overflow-hidden flex flex-col`}>
-        <div className={`grid grid-cols-12 gap-4 p-4 border-b ${tokens.card.border} bg-slate-900/80 text-xs font-semibold ${tokens.text.secondary} uppercase tracking-wider`}>
+        <div className={`max-md:hidden grid grid-cols-12 gap-4 p-4 border-b ${tokens.card.border} bg-slate-900/80 text-xs font-semibold ${tokens.text.secondary} uppercase tracking-wider`}>
           <div className="col-span-4">Regulation</div>
           <div className="col-span-2">Status & Severity</div>
           <div className="col-span-2">Score & Risk</div>
@@ -101,7 +101,7 @@ export function ComplianceListWorkspace({ onSelectRule }: ComplianceListWorkspac
             <div 
               key={rule.id} 
               onClick={() => onSelectRule(rule.id)}
-              className={`grid grid-cols-12 gap-4 p-4 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer items-center group`}
+              className={`grid grid-cols-12 max-md:flex max-md:flex-col max-md:relative gap-4 max-md:gap-3 p-4 max-md:p-5 border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors cursor-pointer max-md:items-start items-center group`}
             >
               
               {/* Regulation Identity */}
@@ -186,7 +186,7 @@ export function ComplianceListWorkspace({ onSelectRule }: ComplianceListWorkspac
               </div>
 
               {/* Actions */}
-              <div className="col-span-1 flex justify-end">
+              <div className="col-span-1 flex justify-end max-md:absolute max-md:top-5 max-md:right-5">
                 <ChevronRight className="w-5 h-5 text-slate-500 group-hover:text-orange-400 transition-colors" />
               </div>
 

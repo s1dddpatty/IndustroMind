@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
 import { 
@@ -20,9 +21,87 @@ import {
 } from "../components/AssistantComponents";
 import { motion } from "framer-motion";
 
-export function DecisionAssistantPage() {
+export type ConversationMode = 
+  | "General"
+  | "Asset Analysis"
+  | "Compliance Analysis"
+  | "Document Analysis"
+  | "Knowledge Capture"
+  | "Executive Reporting"
+  | "Knowledge Graph Exploration"
+  | "Root Cause Investigation";
+
+export interface AssistantContext {
+  sourceModule?: string;
+  conversationMode?: ConversationMode;
+  selectedAsset?: string;
+  selectedDocument?: string;
+  selectedComplianceRule?: string;
+  selectedKnowledgeArticle?: string;
+  selectedReport?: string;
+  selectedGraphNode?: string;
+}
+
+function ContextBanner({ context }: { context: AssistantContext }) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
+
+  // Determine what specific item to show
+  const specificContext = 
+    context.selectedAsset ? { label: "Asset", value: context.selectedAsset } :
+    context.selectedComplianceRule ? { label: "Compliance Rule", value: context.selectedComplianceRule } :
+    context.selectedDocument ? { label: "Document", value: context.selectedDocument } :
+    context.selectedReport ? { label: "Report", value: context.selectedReport } :
+    context.selectedKnowledgeArticle ? { label: "Knowledge Article", value: context.selectedKnowledgeArticle } :
+    context.selectedGraphNode ? { label: "Graph Node", value: context.selectedGraphNode } : null;
+
+  if (!context.sourceModule && !specificContext) return null;
+
+  return (
+    <div className={`mb-6 p-4 rounded-xl border ${tokens.card.border} bg-slate-800/30 flex items-start sm:items-center justify-between gap-4 flex-col sm:flex-row`}>
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+          <Activity className="w-4 h-4 text-emerald-500" />
+        </div>
+        <div>
+          <h4 className={`text-[11px] uppercase tracking-wider font-bold text-slate-500 mb-0.5`}>Current Context</h4>
+          <div className="flex items-center gap-2 text-sm">
+            {specificContext ? (
+              <>
+                <span className={`font-semibold ${tokens.text.primary}`}>{specificContext.label}:</span>
+                <span className="text-emerald-400 font-medium">{specificContext.value}</span>
+              </>
+            ) : (
+              <span className={`font-semibold ${tokens.text.primary}`}>General Conversation</span>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {context.sourceModule && (
+        <div className="flex items-center gap-2 text-[11px] font-medium text-slate-400 bg-slate-900/50 px-2.5 py-1 rounded-md border border-slate-700/50 shrink-0">
+          Source: <span className="text-slate-300">{context.sourceModule}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DecisionAssistantContent() {
+  const { theme } = useTheme();
+  const tokens = DESIGN_TOKENS[theme];
+
+  const searchParams = useSearchParams();
+  const context: AssistantContext = {
+    sourceModule: searchParams.get("sourceModule") || undefined,
+    conversationMode: (searchParams.get("conversationMode") as ConversationMode) || undefined,
+    selectedAsset: searchParams.get("selectedAsset") || undefined,
+    selectedDocument: searchParams.get("selectedDocument") || undefined,
+    selectedComplianceRule: searchParams.get("selectedComplianceRule") || undefined,
+    selectedKnowledgeArticle: searchParams.get("selectedKnowledgeArticle") || undefined,
+    selectedReport: searchParams.get("selectedReport") || undefined,
+    selectedGraphNode: searchParams.get("selectedGraphNode") || undefined,
+  };
 
   const [conversations, setConversations] = useState<ChatConversation[]>(MOCK_CONVERSATIONS);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -132,6 +211,10 @@ export function DecisionAssistantPage() {
         {/* Chat Area */}
         <div className="flex-1 overflow-y-auto p-6 md:p-10 pb-32 hide-scrollbar">
           
+          <div className="max-w-4xl mx-auto">
+            <ContextBanner context={context} />
+          </div>
+
           {!activeConversationId ? (
             <div className="flex flex-col items-center justify-center h-full max-w-3xl mx-auto text-center mt-[-40px]">
               <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
@@ -291,5 +374,17 @@ export function DecisionAssistantPage() {
 
       </div>
     </div>
+  );
+}
+
+export function DecisionAssistantPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex flex-1 items-center justify-center min-h-0 w-full">
+        <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+      </div>
+    }>
+      <DecisionAssistantContent />
+    </Suspense>
   );
 }

@@ -9,14 +9,15 @@ import { HeroData } from "../constants/dashboardData";
 interface DashboardHeroProps {
   data: HeroData;
   onUpload?: () => void;
+  onAskAI?: () => void;
 }
 
-export function DashboardHero({ data, onUpload }: DashboardHeroProps) {
+export function DashboardHero({ data, onUpload, onAskAI }: DashboardHeroProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 
   return (
-    <div className={`relative shrink-0 w-full rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-2 min-h-[78px] gap-6`}>
+    <div className={`relative shrink-0 w-full rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-2 max-md:px-4 max-md:py-4 min-h-[78px] gap-6`}>
       
       {/* Decorative Background */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
@@ -38,7 +39,7 @@ export function DashboardHero({ data, onUpload }: DashboardHeroProps) {
 
       {/* Content - Must have higher z-index to stay above decorative bg */}
       <div className="relative z-10 flex flex-col gap-2.5">
-        <h1 className={`text-[26px] font-bold ${tokens.text.primary} tracking-tight leading-none transition-colors duration-200`}>
+        <h1 className={`text-[26px] max-md:text-xl font-bold ${tokens.text.primary} tracking-tight leading-none transition-colors duration-200`}>
           {data.greeting}
         </h1>
         <p className={`text-base ${tokens.text.secondary} transition-colors duration-200`}>
@@ -46,15 +47,18 @@ export function DashboardHero({ data, onUpload }: DashboardHeroProps) {
         </p>
       </div>
 
-      <div className="relative z-10 flex items-center gap-4 shrink-0">
+      <div className="relative z-10 flex items-center max-md:flex-col max-md:items-stretch max-md:w-full gap-4 shrink-0">
         <button 
           onClick={onUpload}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border ${tokens.border.strong} ${tokens.text.primary} ${tokens.button.ghostHover} transition-colors duration-200 font-medium text-sm bg-transparent`}
+          className={`flex items-center justify-center max-md:justify-center gap-2 px-4 py-2.5 rounded-xl border ${tokens.border.strong} ${tokens.text.primary} ${tokens.button.ghostHover} transition-colors duration-200 font-medium text-sm bg-transparent`}
         >
           <Plus className="h-4 w-4" />
           {data.primaryAction}
         </button>
-        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-white hover:bg-brand/90 hover:-translate-y-0.5 shadow-[0_4px_14px_0_rgba(82,183,136,0.39)] hover:shadow-[0_6px_20px_rgba(82,183,136,0.23)] transition-all duration-200 font-medium text-sm">
+        <button 
+          onClick={onAskAI}
+          className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-white hover:bg-brand/90 hover:-translate-y-0.5 shadow-[0_4px_14px_0_rgba(82,183,136,0.39)] hover:shadow-[0_6px_20px_rgba(82,183,136,0.23)] transition-all duration-200 font-medium text-sm"
+        >
           <MessageSquare className="h-4 w-4" />
           {data.secondaryAction}
         </button>

@@ -22,7 +22,7 @@ export function PageLayout({ children }: PageLayoutProps) {
         <Sidebar />
         <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
           <TopNavigation />
-          <main className="flex-1 min-h-0 overflow-hidden relative flex flex-col">
+          <main className="flex-1 min-h-0 overflow-hidden max-lg:overflow-y-auto relative flex flex-col">
             <PageContainer>
               {children}
             </PageContainer>

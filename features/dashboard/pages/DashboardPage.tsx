@@ -67,11 +67,12 @@ export function DashboardPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.99 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="flex-1 min-h-0 flex flex-col gap-5 max-md:gap-4 overflow-hidden max-lg:overflow-y-auto max-lg:h-auto pb-4 max-lg:px-2"
+            className="flex-1 min-h-0 max-lg:min-h-none flex flex-col gap-5 overflow-hidden max-lg:overflow-visible max-lg:h-auto pb-4 max-md:px-4 max-lg:px-4"
           >
             <DashboardHero 
               data={DASHBOARD_DATA.hero} 
               onUpload={() => router.push("/demo/documents?action=upload")}
+              onAskAI={() => router.push("/demo/decision-assistant?sourceModule=Dashboard&conversationMode=General")}
             />
             <KpiGrid kpis={DASHBOARD_DATA.kpis} />
             <WorkspaceRow 

@@ -106,8 +106,8 @@ export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }:
       </div>
 
       {/* Main List Body */}
-      <div className={`w-full rounded-xl border ${tokens.card.border} ${tokens.card.background} shadow-sm`}>
-        <table className="w-full text-left border-collapse">
+      <div className={`w-full rounded-xl border ${tokens.card.border} ${tokens.card.background} shadow-sm max-md:overflow-x-auto`}>
+        <table className="w-full text-left border-collapse min-w-[800px]">
           <thead>
             <tr className={`border-b ${tokens.card.border} text-xs uppercase tracking-wider text-slate-500 bg-slate-900/30`}>
               <th className="px-6 py-4 font-medium">Document</th>

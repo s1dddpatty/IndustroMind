@@ -28,7 +28,7 @@ export function ProactiveAlerts({ data, className = "", onExpand }: ProactiveAle
       </div>
 
       {/* Alert List */}
-      <div className="flex flex-col flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-col flex-1 min-h-0 max-lg:min-h-none overflow-hidden max-lg:overflow-visible">
         {data.alerts.slice(0, 2).map((alert, index) => (
           <AlertCard 
             key={alert.id}

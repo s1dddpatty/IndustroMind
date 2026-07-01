@@ -21,22 +21,22 @@ export function WorkspaceRow({ data, onExpand, onExpandGraph, onExpandBrief, onG
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
-  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 px-6 py-2 flex flex-col min-h-0 max-lg:min-h-[400px] max-lg:h-auto`;
+  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 px-6 py-2 flex flex-col min-h-0 max-lg:min-h-none max-lg:h-auto max-md:px-4 max-md:py-4`;
 
   return (
-    <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch flex-1 min-h-0">
+    <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch flex-1 min-h-0 max-lg:flex-none max-lg:h-auto">
       {/* Left Card: Proactive Alerts */}
-      <ProactiveAlerts data={data.proactiveAlerts} onExpand={onExpand} className={`${cardBaseClasses} flex-[3]`} />
+      <ProactiveAlerts data={data.proactiveAlerts} onExpand={onExpand} className={`${cardBaseClasses} flex-[3] max-lg:flex-none max-lg:w-full`} />
 
       {/* Center Card: Knowledge Graph Overview */}
-      <KnowledgeGraphOverview data={data.knowledgeGraph} onExpand={onExpandGraph} className={`${cardBaseClasses} flex-[4]`} />
+      <KnowledgeGraphOverview data={data.knowledgeGraph} onExpand={onExpandGraph} className={`${cardBaseClasses} flex-[4] max-lg:flex-none max-lg:w-full`} />
 
       {/* Right Card: AI Decision Brief */}
       <AIDecisionBrief 
         data={data.aiDecisionBrief} 
         onExpand={onExpandBrief}
         onGenerate={onGenerateBrief}
-        className={`${cardBaseClasses} flex-[3]`} 
+        className={`${cardBaseClasses} flex-[3] max-lg:flex-none max-lg:w-full`} 
       />
     </div>
   );

@@ -17,7 +17,7 @@ interface KpiGridProps {
 
 export function KpiGrid({ kpis }: KpiGridProps) {
   return (
-    <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+    <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 max-md:gap-5">
       {kpis.map((kpi) => {
         const IconComponent = ICON_MAP[kpi.iconName] || Activity;
         return (

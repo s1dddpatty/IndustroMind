@@ -20,11 +20,11 @@ export function BottomRow({ data, onExpandDocuments, onExpandQueries, onExpandHe
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
-  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 px-6 py-5 flex flex-col flex-1 min-h-0`;
+  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden max-lg:overflow-visible transition-colors duration-200 px-6 py-5 max-md:px-4 max-md:py-4 flex flex-col flex-1 min-h-0 max-lg:min-h-none max-lg:h-auto max-lg:flex-none max-lg:w-full`;
 
 
   return (
-    <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch shrink-0">
+    <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch shrink-0 max-lg:flex-none max-lg:h-auto">
       {/* Left Card: Recent Documents */}
       <RecentDocuments data={data.recentDocuments} onExpand={onExpandDocuments} className={cardBaseClasses} />
 
