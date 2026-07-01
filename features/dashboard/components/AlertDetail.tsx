@@ -3,18 +3,18 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { AlertData } from "../constants/alerts";
+import { AlertData, DASHBOARD_ALERTS } from "../constants/alerts";
 import { ArrowLeft, AlertTriangle, FileText, CheckCircle2, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import { SeverityBadge, Severity } from "./SeverityBadge";
 
 interface AlertDetailProps {
   alertId: number;
-  alerts: AlertData[];
   onBack: () => void;
 }
 
-export function AlertDetail({ alertId, alerts, onBack }: AlertDetailProps) {
+export function AlertDetail({ alertId, onBack }: AlertDetailProps) {
+  const alerts = DASHBOARD_ALERTS;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

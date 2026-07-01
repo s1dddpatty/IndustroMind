@@ -3,17 +3,17 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { SystemModule } from "../constants/systemHealthData";
-import { ArrowLeft, CheckCircle2, AlertTriangle, XCircle, Wrench, RefreshCw, Activity, Cpu, Database, Network, Clock, ShieldAlert } from "lucide-react";
+import { SystemModule, MOCK_SYSTEM_HEALTH } from "../constants/systemHealthData";
+import { ArrowLeft, RefreshCw, Activity, Server, Cpu, Database, Cloud, Shield, CheckCircle2, AlertTriangle, XCircle, Wrench, Zap, TrendingUp, Clock, AlertCircle, Network, ShieldAlert } from "lucide-react";
 import { SparklineChart, DependencyGraph, IncidentHistoryList, ServiceActionsBar } from "./service-detail/ServiceDetailComponents";
 
 interface ServiceDetailWorkspaceProps {
   serviceId: string;
-  services: SystemModule[];
   onBack: () => void;
 }
 
-export function ServiceDetailWorkspace({ serviceId, services, onBack }: ServiceDetailWorkspaceProps) {
+export function ServiceDetailWorkspace({ serviceId, onBack }: ServiceDetailWorkspaceProps) {
+  const services = MOCK_SYSTEM_HEALTH;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

@@ -30,7 +30,7 @@ function getRelativeTime(isoString: string) {
 export function RecentQueries({ data, onExpand, className = "" }: RecentQueriesProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
-  const queries = data.queries?.slice(0, 3) || [];
+  const queries = data.queries?.slice(0, 2) || [];
 
   return (
     <div className={`${className} flex flex-col`}>

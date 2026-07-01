@@ -4,7 +4,7 @@ import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
 import { KnowledgeGraphData } from "../constants/dashboardData";
-import { ForceGraphRenderer } from "./ForceGraphRenderer";
+import { LightweightGraphPreview } from "./LightweightGraphPreview";
 import { ArrowRight } from "lucide-react";
 
 interface KnowledgeGraphOverviewProps {
@@ -34,7 +34,7 @@ export function KnowledgeGraphOverview({ data, className = "", onExpand }: Knowl
       
       <div className="flex-1 relative -mx-6 -mb-4 overflow-hidden rounded-b-xl border-t border-slate-800/50">
         <div className="absolute inset-0 pointer-events-none z-10 bg-gradient-to-b from-transparent to-slate-950/80" />
-        <ForceGraphRenderer data={data.graph} interactive={false} />
+        <LightweightGraphPreview />
         
         {/* Legend */}
         <div className="absolute bottom-2 left-0 right-0 z-20 flex justify-center gap-4 px-4">

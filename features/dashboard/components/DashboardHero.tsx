@@ -16,7 +16,7 @@ export function DashboardHero({ data, onUpload }: DashboardHeroProps) {
   const tokens = DESIGN_TOKENS[theme];
 
   return (
-    <div className={`relative w-full rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-2 min-h-[78px] gap-6`}>
+    <div className={`relative shrink-0 w-full rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-2 min-h-[78px] gap-6`}>
       
       {/* Decorative Background */}
       <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">

@@ -3,16 +3,16 @@
 import React, { useState, useMemo } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { SystemModule, calculateOverallSystemHealth } from "../constants/systemHealthData";
+import { SystemModule, calculateOverallSystemHealth, MOCK_SYSTEM_HEALTH } from "../constants/systemHealthData";
 import { ArrowLeft, RefreshCw, Search, Filter, Activity, Server, Cpu, Database, Cloud, Shield, CheckCircle2, AlertTriangle, XCircle, Wrench, Clock, Zap } from "lucide-react";
 
 interface SystemHealthWorkspaceProps {
-  services: SystemModule[];
   onBack: () => void;
   onSelectService: (id: string) => void;
 }
 
-export function SystemHealthWorkspace({ services, onBack, onSelectService }: SystemHealthWorkspaceProps) {
+export function SystemHealthWorkspace({ onBack, onSelectService }: SystemHealthWorkspaceProps) {
+  const services = MOCK_SYSTEM_HEALTH;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

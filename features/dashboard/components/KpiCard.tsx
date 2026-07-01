@@ -66,7 +66,7 @@ const colorStyles = {
   },
 };
 
-export function KpiCard({ title, value, icon: Icon, color, trend, sparklineData }: KpiCardProps) {
+export const KpiCard = React.memo(function KpiCard({ title, value, icon: Icon, color, trend, sparklineData }: KpiCardProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
@@ -129,4 +129,4 @@ export function KpiCard({ title, value, icon: Icon, color, trend, sparklineData 
       </div>
     </div>
   );
-}
+});

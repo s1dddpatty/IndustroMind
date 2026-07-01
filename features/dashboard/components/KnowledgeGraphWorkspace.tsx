@@ -4,16 +4,16 @@ import React, { useState, useMemo } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
 import { ArrowLeft, Search, Filter } from "lucide-react";
-import { GraphData, GraphNode, NodeType } from "../constants/knowledgeGraphData";
+import { GraphNode, NodeType, KNOWLEDGE_GRAPH_DATA } from "../constants/knowledgeGraphData";
 import { ForceGraphRenderer } from "./ForceGraphRenderer";
 import { GraphNodeDetail } from "./GraphNodeDetail";
 
 interface KnowledgeGraphWorkspaceProps {
-  data: GraphData;
   onBack: () => void;
 }
 
-export function KnowledgeGraphWorkspace({ data, onBack }: KnowledgeGraphWorkspaceProps) {
+export function KnowledgeGraphWorkspace({ onBack }: KnowledgeGraphWorkspaceProps) {
+  const data = KNOWLEDGE_GRAPH_DATA;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

@@ -1,5 +1,5 @@
 import { AlertData, DASHBOARD_ALERTS } from "./alerts";
-import { GraphData, KNOWLEDGE_GRAPH_DATA } from "./knowledgeGraphData";
+// Knowledge Graph data is dynamically imported by the workspace now
 import { AiDecisionBrief, MOCK_AI_BRIEFS } from "./aiDecisionBriefData";
 import { DocumentData, MOCK_DOCUMENTS } from "./recentDocumentsData";
 import { Query, MOCK_RECENT_QUERIES } from "./recentQueriesData";
@@ -37,7 +37,6 @@ export interface ProactiveAlertsData extends WorkspaceSectionData {
 }
 
 export interface KnowledgeGraphData extends WorkspaceSectionData {
-  graph: GraphData;
 }
 
 export interface DashboardWorkspaceData {
@@ -152,7 +151,6 @@ export const DASHBOARD_DATA: DashboardData = {
     },
     knowledgeGraph: {
       title: "Knowledge Graph Overview",
-      graph: KNOWLEDGE_GRAPH_DATA,
     },
     aiDecisionBrief: {
       title: "AI Decision Brief",

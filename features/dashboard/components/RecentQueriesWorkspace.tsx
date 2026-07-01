@@ -3,16 +3,16 @@
 import React, { useState, useMemo } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { Query } from "../constants/recentQueriesData";
+import { Query, MOCK_RECENT_QUERIES } from "../constants/recentQueriesData";
 import { ArrowLeft, Search, Filter, ArrowUpDown, Bot, Clock, Brain, Activity, MessageSquare } from "lucide-react";
 
 interface RecentQueriesWorkspaceProps {
-  queries: Query[];
   onBack: () => void;
   onSelectQuery: (id: string) => void;
 }
 
-export function RecentQueriesWorkspace({ queries, onBack, onSelectQuery }: RecentQueriesWorkspaceProps) {
+export function RecentQueriesWorkspace({ onBack, onSelectQuery }: RecentQueriesWorkspaceProps) {
+  const queries = MOCK_RECENT_QUERIES;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

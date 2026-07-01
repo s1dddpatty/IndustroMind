@@ -19,7 +19,7 @@ export function SystemHealth({ data, onExpand, className = "" }: SystemHealthPro
   const tokens = DESIGN_TOKENS[theme];
   
   const services = data.services || [];
-  const topServices = services.slice(0, 4);
+  const topServices = services.slice(0, 3);
   const overallHealth = calculateOverallSystemHealth(services);
   
   // Circle math

@@ -13,7 +13,7 @@ interface AlertCardProps {
   className?: string;
 }
 
-export function AlertCard({ alert, onClick, className = "" }: AlertCardProps) {
+export const AlertCard = React.memo(function AlertCard({ alert, onClick, className = "" }: AlertCardProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 
@@ -74,4 +74,4 @@ export function AlertCard({ alert, onClick, className = "" }: AlertCardProps) {
       </div>
     </div>
   );
-}
+});

@@ -3,7 +3,7 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { Query } from "../constants/recentQueriesData";
+import { Query, MOCK_RECENT_QUERIES } from "../constants/recentQueriesData";
 import { ArrowLeft, FileText, Share2, Download, Copy, Brain, Link, Activity } from "lucide-react";
 import { 
   ConversationHeader, 
@@ -18,11 +18,11 @@ import {
 
 interface QueryDetailWorkspaceProps {
   queryId: string;
-  queries: Query[];
   onBack: () => void;
 }
 
-export function QueryDetailWorkspace({ queryId, queries, onBack }: QueryDetailWorkspaceProps) {
+export function QueryDetailWorkspace({ queryId, onBack }: QueryDetailWorkspaceProps) {
+  const queries = MOCK_RECENT_QUERIES;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   

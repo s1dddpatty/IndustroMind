@@ -2,15 +2,17 @@
 
 import React, { memo } from "react";
 import Link from "next/link";
-import { Hexagon, ChevronDown, LogOut, User, Activity, Settings2 } from "lucide-react";
+import { Hexagon, ChevronDown, LogOut, User, Activity, Settings2, X } from "lucide-react";
 import { NAVIGATION_ITEMS } from "@/constants/navigation";
 import { useActiveNavigation } from "../hooks/useActiveNavigation";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
+import { useAppShell } from "../hooks/useAppShell";
 
 export const Sidebar = memo(function Sidebar() {
   const { activeId } = useActiveNavigation();
   const { theme } = useTheme();
+  const { isMobileSidebarOpen, setIsMobileSidebarOpen } = useAppShell();
   
   const [isProfileOpen, setIsProfileOpen] = React.useState(false);
   
@@ -21,10 +23,33 @@ export const Sidebar = memo(function Sidebar() {
   const bottomNav = NAVIGATION_ITEMS.filter(item => item.isBottom);
 
   return (
-    <aside className={`w-[280px] flex-shrink-0 flex flex-col h-screen ${navTokens.background} border-r ${navTokens.border} overflow-y-auto transition-colors duration-200`}>
-      {/* Logo & Tagline */}
-      <div className="px-6 pt-8 pb-4">
-        <Link href="/" className="flex items-center gap-2 mb-2" aria-label="IndustroMind home">
+    <>
+      {/* Mobile overlay backdrop */}
+      {isMobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar Container */}
+      <aside className={`
+        w-[280px] flex-shrink-0 flex flex-col h-screen overflow-y-auto transition-all duration-300 z-50
+        ${navTokens.background} border-r ${navTokens.border}
+        max-lg:fixed max-lg:top-0 max-lg:left-0 max-lg:bottom-0 max-lg:h-full max-lg:shadow-2xl
+        ${isMobileSidebarOpen ? 'max-lg:translate-x-0' : 'max-lg:-translate-x-full lg:translate-x-0'}
+      `}>
+        {/* Logo & Tagline */}
+        <div className="px-6 pt-8 pb-4 relative">
+          {/* Close button for mobile */}
+          <button 
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="absolute top-4 right-4 lg:hidden text-slate-400 hover:text-white"
+          >
+            <X className="w-6 h-6" />
+          </button>
+
+          <Link href="/" className="flex items-center gap-2 mb-2" aria-label="IndustroMind home" onClick={() => setIsMobileSidebarOpen(false)}>
           <Hexagon className={`h-8 w-8 ${navTokens.accent} fill-current transition-colors duration-200`} />
           <div>
             <span className={`text-xl font-extrabold ${navTokens.logoText} tracking-tight transition-colors duration-200`}>IndustroMind</span>
@@ -41,6 +66,7 @@ export const Sidebar = memo(function Sidebar() {
             <Link
               key={item.id}
               href={item.href}
+              prefetch={true}
               aria-current={isActive ? "page" : undefined}
               className={`flex items-center gap-3 px-4 h-12 rounded-xl transition-colors duration-200 text-sm font-medium ${
                 isActive 
@@ -67,6 +93,7 @@ export const Sidebar = memo(function Sidebar() {
               <Link
                 key={item.id}
                 href={item.href}
+                prefetch={true}
                 aria-current={isActive ? "page" : undefined}
                 className={`flex items-center gap-3 px-4 h-12 rounded-xl transition-colors duration-200 text-sm font-medium ${
                   isActive 
@@ -128,5 +155,6 @@ export const Sidebar = memo(function Sidebar() {
         </div>
       </div>
     </aside>
+    </>
   );
 });

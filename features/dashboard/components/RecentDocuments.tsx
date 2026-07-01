@@ -29,7 +29,7 @@ export function RecentDocuments({ data, onExpand, className = "" }: RecentDocume
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 
-  const recentDocs = data.documents.slice(0, 3);
+  const recentDocs = data.documents.slice(0, 2);
 
   return (
     <div className={`${className} flex flex-col`}>

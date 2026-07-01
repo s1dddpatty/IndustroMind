@@ -37,25 +37,25 @@ export function AiBriefWorkspace({ brief, isGenerating, onBack, onGenerateNew }:
   return (
     <div className="flex flex-col w-full pb-8">
       {/* Header Area */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
         <div className="flex items-center gap-4">
           <button 
             onClick={onBack}
             disabled={isGenerating}
-            className="p-2 -ml-2 rounded-lg hover:bg-slate-800/50 transition-colors text-slate-400 hover:text-white disabled:opacity-50"
+            className="p-2 -ml-2 rounded-lg hover:bg-slate-800/50 transition-colors text-slate-400 hover:text-white disabled:opacity-50 shrink-0"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div>
-            <h1 className={`text-2xl font-bold flex items-center gap-2 ${tokens.text.primary}`}>
-              <Sparkles className="w-6 h-6 text-emerald-500" />
-              AI Decision Brief
+          <div className="min-w-0">
+            <h1 className={`text-xl md:text-2xl font-bold flex items-center gap-2 ${tokens.text.primary} truncate`}>
+              <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-emerald-500 shrink-0" />
+              <span className="truncate">AI Decision Brief</span>
             </h1>
             {!isGenerating && (
-              <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {formatDate(brief.createdAt)}</span>
-                <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {brief.plantId}</span>
-                <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5" /> Confidence: <strong className="text-emerald-500">{brief.confidenceScore}%</strong></span>
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-2 text-xs text-slate-400">
+                <span className="flex items-center gap-1 shrink-0"><Clock className="w-3.5 h-3.5" /> {formatDate(brief.createdAt)}</span>
+                <span className="flex items-center gap-1 shrink-0"><MapPin className="w-3.5 h-3.5" /> {brief.plantId}</span>
+                <span className="flex items-center gap-1 shrink-0"><ShieldCheck className="w-3.5 h-3.5" /> Conf: <strong className="text-emerald-500">{brief.confidenceScore}%</strong></span>
               </div>
             )}
           </div>
@@ -63,24 +63,24 @@ export function AiBriefWorkspace({ brief, isGenerating, onBack, onGenerateNew }:
 
         {/* Action Buttons */}
         {!isGenerating && (
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2 md:gap-3 pl-10 md:pl-0">
             <button 
               onClick={() => alert("[DEMO]: Exporting PDF...")}
-              className={`px-4 py-2 rounded-lg border ${tokens.card.border} ${tokens.text.secondary} hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-sm font-medium`}
+              className={`px-3 md:px-4 py-2 rounded-lg border ${tokens.card.border} ${tokens.text.secondary} hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-xs md:text-sm font-medium`}
             >
-              <Download className="w-4 h-4" /> Export PDF
+              <Download className="w-4 h-4" /> <span className="max-sm:hidden">Export PDF</span>
             </button>
             <button 
               onClick={() => alert("[DEMO]: Opening sharing options...")}
-              className={`px-4 py-2 rounded-lg border ${tokens.card.border} ${tokens.text.secondary} hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-sm font-medium`}
+              className={`px-3 md:px-4 py-2 rounded-lg border ${tokens.card.border} ${tokens.text.secondary} hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-xs md:text-sm font-medium`}
             >
-              <Share2 className="w-4 h-4" /> Share
+              <Share2 className="w-4 h-4" /> <span className="max-sm:hidden">Share</span>
             </button>
             <button 
               onClick={onGenerateNew}
-              className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 text-sm font-medium"
+              className="px-3 md:px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 text-xs md:text-sm font-medium flex-1 sm:flex-none justify-center"
             >
-              <Sparkles className="w-4 h-4" /> Generate New Brief
+              <Sparkles className="w-4 h-4" /> Generate New
             </button>
           </div>
         )}

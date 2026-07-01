@@ -24,7 +24,7 @@ export function GraphNodeDetail({ node, onClose }: GraphNodeDetailProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
           transition={{ duration: 0.25, ease: "easeOut" }}
-          className={`absolute top-0 right-0 w-80 h-full border-l ${tokens.card.border} ${tokens.card.background} bg-opacity-95 backdrop-blur-md shadow-2xl flex flex-col z-30`}
+          className={`absolute top-0 right-0 w-80 h-full border-l max-lg:w-full max-lg:h-[50%] max-lg:bottom-0 max-lg:top-auto max-lg:border-l-0 max-lg:border-t max-lg:rounded-t-2xl ${tokens.card.border} ${tokens.card.background} bg-opacity-95 backdrop-blur-md shadow-2xl flex flex-col z-30`}
         >
           <div className="flex items-center justify-between p-4 border-b border-slate-800/50">
             <h2 className={`font-bold ${tokens.text.primary}`}>{node.label}</h2>

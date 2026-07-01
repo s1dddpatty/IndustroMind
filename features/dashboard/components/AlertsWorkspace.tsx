@@ -3,7 +3,7 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { AlertData } from "../constants/alerts";
+import { AlertData, DASHBOARD_ALERTS } from "../constants/alerts";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { AlertSearch } from "./AlertSearch";
@@ -11,12 +11,12 @@ import { AlertFilters } from "./AlertFilters";
 import { AlertCard } from "./AlertCard";
 
 interface AlertsWorkspaceProps {
-  alerts: AlertData[];
   onBack: () => void;
   onSelectAlert: (id: number) => void;
 }
 
-export function AlertsWorkspace({ alerts, onBack, onSelectAlert }: AlertsWorkspaceProps) {
+export function AlertsWorkspace({ onBack, onSelectAlert }: AlertsWorkspaceProps) {
+  const alerts = DASHBOARD_ALERTS;
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 

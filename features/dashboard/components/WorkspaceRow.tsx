@@ -21,7 +21,7 @@ export function WorkspaceRow({ data, onExpand, onExpandGraph, onExpandBrief, onG
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
-  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 px-6 py-4 flex flex-col min-h-0`;
+  const cardBaseClasses = `relative rounded-2xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden transition-colors duration-200 px-6 py-2 flex flex-col min-h-0 max-lg:min-h-[400px] max-lg:h-auto`;
 
   return (
     <div className="w-full flex flex-col lg:flex-row gap-5 items-stretch flex-1 min-h-0">

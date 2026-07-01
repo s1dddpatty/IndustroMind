@@ -7,16 +7,19 @@ import { DashboardHero } from "../components/DashboardHero";
 import { KpiGrid } from "../components/KpiGrid";
 import { WorkspaceRow } from "../components/WorkspaceRow";
 import { BottomRow } from "../components/BottomRow";
-import { AlertsWorkspace } from "../components/AlertsWorkspace";
-import { AlertDetail } from "../components/AlertDetail";
+import dynamic from "next/dynamic";
 import { DASHBOARD_DATA } from "../constants/dashboardData";
-import { KnowledgeGraphWorkspace } from "../components/KnowledgeGraphWorkspace";
-import { AiBriefWorkspace } from "../components/AiBriefWorkspace";
-import { RecentQueriesWorkspace } from "../components/RecentQueriesWorkspace";
-import { QueryDetailWorkspace } from "@/features/dashboard/components/QueryDetailWorkspace";
-import { SystemHealthWorkspace } from "../components/SystemHealthWorkspace";
-import { ServiceDetailWorkspace } from "../components/ServiceDetailWorkspace";
 import { aiBriefService } from "../services/aiBriefService";
+
+// Heavy detail workspaces lazy-loaded to code-split huge mock data and heavy renderers
+const AlertsWorkspace = dynamic(() => import("../components/AlertsWorkspace").then(mod => mod.AlertsWorkspace));
+const AlertDetail = dynamic(() => import("../components/AlertDetail").then(mod => mod.AlertDetail));
+const KnowledgeGraphWorkspace = dynamic(() => import("../components/KnowledgeGraphWorkspace").then(mod => mod.KnowledgeGraphWorkspace));
+const AiBriefWorkspace = dynamic(() => import("../components/AiBriefWorkspace").then(mod => mod.AiBriefWorkspace));
+const RecentQueriesWorkspace = dynamic(() => import("../components/RecentQueriesWorkspace").then(mod => mod.RecentQueriesWorkspace));
+const QueryDetailWorkspace = dynamic(() => import("@/features/dashboard/components/QueryDetailWorkspace").then(mod => mod.QueryDetailWorkspace));
+const SystemHealthWorkspace = dynamic(() => import("../components/SystemHealthWorkspace").then(mod => mod.SystemHealthWorkspace));
+const ServiceDetailWorkspace = dynamic(() => import("../components/ServiceDetailWorkspace").then(mod => mod.ServiceDetailWorkspace));
 
 export type WorkspaceView = "dashboard" | "alerts" | "alert-detail" | "knowledge-graph" | "ai-brief" | "recent-queries" | "query-detail" | "system-health" | "service-detail";
 
@@ -64,20 +67,14 @@ export function DashboardPage() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.99 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="flex-1 min-h-0 flex flex-col gap-5 overflow-hidden"
+            className="flex-1 min-h-0 flex flex-col gap-5 max-md:gap-4 overflow-hidden max-lg:overflow-y-auto max-lg:h-auto pb-4 max-lg:px-2"
           >
-            {/* Dashboard Layout Lock Safeguards */}
-            <div className="shrink-0">
-              <DashboardHero 
-                data={DASHBOARD_DATA.hero} 
-                onUpload={() => router.push("/demo/documents?action=upload")}
-              />
-            </div>
-            <div className="shrink-0">
-              <KpiGrid kpis={DASHBOARD_DATA.kpis} />
-            </div>
-            <div className="flex-1 min-h-0 flex flex-col">
-              <WorkspaceRow 
+            <DashboardHero 
+              data={DASHBOARD_DATA.hero} 
+              onUpload={() => router.push("/demo/documents?action=upload")}
+            />
+            <KpiGrid kpis={DASHBOARD_DATA.kpis} />
+            <WorkspaceRow 
               data={{
                 ...DASHBOARD_DATA.workspace,
                 aiDecisionBrief: {
@@ -90,15 +87,12 @@ export function DashboardPage() {
               onExpandBrief={() => setWorkspace("ai-brief")}
               onGenerateBrief={handleGenerateBrief}
             />
-            </div>
-            <div className="shrink-0">
-              <BottomRow 
-                data={DASHBOARD_DATA.bottomRow} 
-                onExpandDocuments={() => router.push("/demo/documents")}
-                onExpandQueries={() => setWorkspace("recent-queries")}
-                onExpandHealth={() => setWorkspace("system-health")}
-              />
-            </div>
+            <BottomRow 
+              data={DASHBOARD_DATA.bottomRow} 
+              onExpandDocuments={() => router.push("/demo/documents")}
+              onExpandQueries={() => setWorkspace("recent-queries")}
+              onExpandHealth={() => setWorkspace("system-health")}
+            />
           </motion.div>
         )}
         {workspace !== "dashboard" && (
@@ -112,7 +106,6 @@ export function DashboardPage() {
           >
             {workspace === "alerts" && (
               <AlertsWorkspace 
-                alerts={DASHBOARD_DATA.workspace.proactiveAlerts.alerts}
                 onBack={() => setWorkspace("dashboard")} 
                 onSelectAlert={handleSelectAlert} 
               />
@@ -121,14 +114,12 @@ export function DashboardPage() {
             {workspace === "alert-detail" && selectedAlertId !== null && (
               <AlertDetail 
                 alertId={selectedAlertId}
-                alerts={DASHBOARD_DATA.workspace.proactiveAlerts.alerts}
                 onBack={() => setWorkspace("alerts")} 
               />
             )}
 
             {workspace === "knowledge-graph" && (
               <KnowledgeGraphWorkspace
-                data={DASHBOARD_DATA.workspace.knowledgeGraph.graph}
                 onBack={() => setWorkspace("dashboard")}
               />
             )}
@@ -146,7 +137,6 @@ export function DashboardPage() {
 
             {workspace === "recent-queries" && (
               <RecentQueriesWorkspace
-                queries={DASHBOARD_DATA.bottomRow.recentQueries.queries}
                 onBack={() => setWorkspace("dashboard")}
                 onSelectQuery={(id: string) => {
                   setSelectedQueryId(id);
@@ -158,14 +148,12 @@ export function DashboardPage() {
             {workspace === "query-detail" && selectedQueryId && (
               <QueryDetailWorkspace
                 queryId={selectedQueryId}
-                queries={DASHBOARD_DATA.bottomRow.recentQueries.queries}
                 onBack={() => setWorkspace("recent-queries")}
               />
             )}
 
             {workspace === "system-health" && (
               <SystemHealthWorkspace
-                services={DASHBOARD_DATA.bottomRow.systemHealth.services}
                 onBack={() => setWorkspace("dashboard")}
                 onSelectService={(id: string) => {
                   setSelectedServiceId(id);
@@ -177,7 +165,6 @@ export function DashboardPage() {
             {workspace === "service-detail" && selectedServiceId && (
               <ServiceDetailWorkspace
                 serviceId={selectedServiceId}
-                services={DASHBOARD_DATA.bottomRow.systemHealth.services}
                 onBack={() => setWorkspace("system-health")}
               />
             )}
