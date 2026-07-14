@@ -3,7 +3,7 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { MOCK_INTELLIGENCE_REPORTS } from "../constants/reportsData";
+import { IntelligenceReport } from "../constants/reportsData";
 import { 
   ArrowLeft, BrainCircuit, FileBarChart, AlertTriangle, 
   TrendingUp, CheckCircle2, Server, Clock, GitCommit, FileText, Download, Target, Activity, ShieldAlert
@@ -12,15 +12,16 @@ import { useRouter } from "next/navigation";
 
 interface ReportDetailWorkspaceProps {
   reportId: string;
+  reports: IntelligenceReport[];
   onBack: () => void;
 }
 
-export function ReportDetailWorkspace({ reportId, onBack }: ReportDetailWorkspaceProps) {
+export function ReportDetailWorkspace({ reportId, reports, onBack }: ReportDetailWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   const router = useRouter();
 
-  const report = MOCK_INTELLIGENCE_REPORTS.find(r => r.id === reportId);
+  const report = reports.find(r => r.id === reportId);
   if (!report) return null;
 
   return (

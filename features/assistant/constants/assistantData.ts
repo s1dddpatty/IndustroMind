@@ -1,5 +1,7 @@
 export type MessageRole = "user" | "assistant" | "system";
 
+export type MessageStatus = "pending" | "receiving" | "streaming" | "completed" | "archived" | "error";
+
 export interface GraphNodeRef {
   id: string;
   label: string;
@@ -46,6 +48,10 @@ export interface ChatMessage {
   content: string;
   timestamp: string;
   
+  // Lifecycle
+  status?: MessageStatus;
+  errorDetail?: string;
+
   // Rich Context (typically attached to 'assistant' messages)
   reasoningSteps?: AiReasoningStep[];
   executiveSummary?: string;
@@ -55,6 +61,21 @@ export interface ChatMessage {
   complianceImpacts?: ComplianceImpact[];
   recommendations?: ActionRecommendation[];
   followUpQuestions?: string[];
+
+  // Future AI Orchestration Prep (Not rendered yet, but modeled)
+  invokedTools?: any[];
+  executionSteps?: any[];
+  reasoningSummary?: string;
+  generatedArtifacts?: any[];
+  reportIds?: string[];
+  graphNodeIds?: string[];
+  complianceIds?: string[];
+  documentIds?: string[];
+
+  // Technical Metadata (Not Exposed in UI)
+  backendRequestId?: string;
+  endpointOrigin?: string;
+  adapterVersion?: string;
 }
 
 export interface ChatConversation {
@@ -64,6 +85,12 @@ export interface ChatConversation {
   timestamp: string;
   pinned: boolean;
   messages: ChatMessage[];
+  status?: "active" | "archived";
+  
+  // Contextual Awareness
+  sourceModule?: string;
+  selectedEntity?: string;
+  metadata?: Record<string, any>;
 }
 
 export const ASSISTANT_PROMPTS = [
@@ -85,16 +112,19 @@ export const MOCK_CONVERSATIONS: ChatConversation[] = [
     department: "Operations",
     timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 mins ago
     pinned: true,
+    status: "active",
     messages: [
       {
         id: "msg-1",
         role: "user",
         content: "Is Pump P-201 safe to restart?",
         timestamp: new Date(Date.now() - 1000 * 60 * 31).toISOString(),
+        status: "completed"
       },
       {
         id: "msg-2",
         role: "assistant",
+        status: "completed",
         content: "Based on the cross-reference of recent maintenance records, real-time sensor data, and current SOPs, it is **NOT SAFE** to restart Pump P-201 at this moment.",
         timestamp: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
         reasoningSteps: [
@@ -177,18 +207,21 @@ export const MOCK_CONVERSATIONS: ChatConversation[] = [
     department: "Engineering",
     timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(), // 2 days ago
     pinned: false,
+    status: "active",
     messages: [
       {
         id: "msg-1",
         role: "user",
         content: "Explain why compressor C-104 keeps overheating.",
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
+        status: "completed"
       },
       {
         id: "msg-2",
         role: "assistant",
         content: "Compressor C-104 is experiencing systemic overheating due to a failing upstream cooling valve (V-104) and degraded synthetic lubricant.",
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 47.9).toISOString(),
+        status: "completed"
       }
     ]
   }

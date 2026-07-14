@@ -3,7 +3,7 @@
 import React from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { MOCK_COMPLIANCE_RULES, ComplianceRule } from "../constants/complianceData";
+import { ComplianceRule } from "../constants/complianceData";
 import { 
   ArrowLeft, ShieldCheck, Activity, BrainCircuit, FileText, 
   AlertTriangle, Network, Clock, CheckCircle2, XCircle, 
@@ -13,15 +13,16 @@ import { useRouter } from "next/navigation";
 
 interface ComplianceDetailWorkspaceProps {
   ruleId: string;
+  rules: ComplianceRule[];
   onBack: () => void;
 }
 
-export function ComplianceDetailWorkspace({ ruleId, onBack }: ComplianceDetailWorkspaceProps) {
+export function ComplianceDetailWorkspace({ ruleId, rules, onBack }: ComplianceDetailWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   const router = useRouter();
 
-  const rule = MOCK_COMPLIANCE_RULES.find(r => r.id === ruleId);
+  const rule = rules.find(r => r.id === ruleId);
   if (!rule) return null;
 
   const statusColor = rule.status === "Compliant" ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 

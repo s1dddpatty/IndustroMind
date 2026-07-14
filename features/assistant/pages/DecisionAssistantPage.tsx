@@ -5,11 +5,11 @@ import { useSearchParams } from "next/navigation";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
 import { 
-  MOCK_CONVERSATIONS, 
   ASSISTANT_PROMPTS, 
   ChatConversation, 
   ChatMessage 
 } from "../constants/assistantData";
+import { useDecisionAssistant } from "../hooks/useDecisionAssistant";
 import { 
   Bot, User, Send, Paperclip, Mic, Plus, MessageSquare, Search, SearchCode, 
   Clock, Pin, FileText, Activity, Loader2
@@ -20,6 +20,8 @@ import {
   FollowUpSuggestions 
 } from "../components/AssistantComponents";
 import { motion } from "framer-motion";
+import { Skeleton } from "@/features/shared/components/ui/Skeleton";
+import { useToast } from "@/features/shared/components/ui/ToastProvider";
 
 export type ConversationMode = 
   | "General"
@@ -103,35 +105,32 @@ function DecisionAssistantContent() {
     selectedGraphNode: searchParams.get("selectedGraphNode") || undefined,
   };
 
-  const [conversations, setConversations] = useState<ChatConversation[]>(MOCK_CONVERSATIONS);
-  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const {
+    conversations,
+    activeConversation,
+    activeConversationId,
+    sendMessage,
+    handleNewConversation,
+    selectConversation,
+    retryLastMessage,
+  } = useDecisionAssistant(context);
+
   const [inputValue, setInputValue] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
-  
-  const activeConversation = conversations.find(c => c.id === activeConversationId);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [activeConversation?.messages, isTyping]);
+  }, [activeConversation?.messages]);
 
   const handleSendMessage = (text: string = inputValue) => {
     if (!text.trim()) return;
-    
-    // In a real app, this would create a new conversation if none exists,
-    // push the user message, set isTyping(true), and then stream the AI response.
-    // For this mockup, we'll just simulate typing and clear the input.
+    sendMessage(text);
     setInputValue("");
-    setIsTyping(true);
-    
-    setTimeout(() => {
-      setIsTyping(false);
-    }, 1500);
   };
 
-  const handleNewConversation = () => {
-    setActiveConversationId(null);
+  const onNewConversation = () => {
+    handleNewConversation();
     setInputValue("");
   };
 
@@ -141,7 +140,7 @@ function DecisionAssistantContent() {
       {/* Left Sidebar: History */}
       <div className={`w-72 shrink-0 flex flex-col border-r ${tokens.card.border} pr-4 mr-4`}>
         <button 
-          onClick={handleNewConversation}
+          onClick={onNewConversation}
           className="w-full flex items-center justify-between p-3 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors font-bold text-sm mb-6"
         >
           New Conversation <Plus className="w-4 h-4" />
@@ -167,7 +166,7 @@ function DecisionAssistantContent() {
               {conversations.filter(c => c.pinned).map(conv => (
                 <div 
                   key={conv.id}
-                  onClick={() => setActiveConversationId(conv.id)}
+                  onClick={() => selectConversation(conv.id)}
                   className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
                 >
                   <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
@@ -189,7 +188,7 @@ function DecisionAssistantContent() {
               {conversations.filter(c => !c.pinned).map(conv => (
                 <div 
                   key={conv.id}
-                  onClick={() => setActiveConversationId(conv.id)}
+                  onClick={() => selectConversation(conv.id)}
                   className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
                 >
                   <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
@@ -299,6 +298,20 @@ function DecisionAssistantContent() {
                             onClick={(q) => handleSendMessage(q)} 
                           />
                         )}
+
+                        {/* 6. Error & Retry */}
+                        {msg.status === "error" && (
+                          <div className="mt-2 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                            <p className="text-xs font-bold text-red-500 mb-1">Failed to generate response</p>
+                            <p className="text-xs text-red-400 mb-3">{msg.errorDetail}</p>
+                            <button 
+                              onClick={() => retryLastMessage(msg.id)}
+                              className="px-3 py-1.5 bg-red-500 text-white rounded text-xs font-bold hover:bg-red-600 transition-colors"
+                            >
+                              Retry Request
+                            </button>
+                          </div>
+                        )}
                         
                       </div>
                     )}
@@ -313,13 +326,14 @@ function DecisionAssistantContent() {
                 </div>
               ))}
               
-              {isTyping && (
+              
+              {activeConversation?.messages.some(m => m.status === 'pending' || m.status === 'receiving') && (
                 <div className="flex gap-4 justify-start">
                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-1">
                     <Loader2 className="w-5 h-5 text-emerald-500 animate-spin" />
                   </div>
                   <div className="flex items-center px-4 py-3 text-sm font-medium text-emerald-500/70">
-                    Querying Knowledge Graph and analyzing documents...
+                    {activeConversation.messages.find(m => m.status === 'pending' || m.status === 'receiving')?.content || "Processing request..."}
                   </div>
                 </div>
               )}
@@ -380,8 +394,9 @@ function DecisionAssistantContent() {
 export function DecisionAssistantPage() {
   return (
     <Suspense fallback={
-      <div className="flex flex-1 items-center justify-center min-h-0 w-full">
-        <Loader2 className="w-6 h-6 text-emerald-500 animate-spin" />
+      <div className="flex flex-1 min-h-0 w-full p-6">
+        <Skeleton className="w-72 h-full mr-4 hidden md:block" rounded="xl" />
+        <Skeleton className="flex-1 h-full" rounded="xl" />
       </div>
     }>
       <DecisionAssistantContent />

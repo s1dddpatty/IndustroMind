@@ -6,6 +6,9 @@ import { AuthCard } from "../components/AuthCard";
 import { InputField, PasswordField, SelectField } from "../components/FormInputs";
 import { useRouter } from "next/navigation";
 import { CheckCircle2 } from "lucide-react";
+import { authService } from "../services/authService";
+import { ApiError } from "../../../lib/api/errors";
+import { useAuth } from "../../../contexts/AuthContext";
 
 const INDUSTRY_OPTIONS = [
   { label: "Oil & Gas", value: "oil-gas" },
@@ -32,20 +35,43 @@ export function RegisterPage() {
     confirmPassword: ""
   });
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     
-    // Simulate backend auth/organization creation delay
-    setTimeout(() => {
-      setIsLoading(false);
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const user = await authService.register({
+        name: formData.adminName,
+        email: formData.email,
+        password: formData.password,
+        organization: formData.orgName,
+        industry: formData.industry,
+        plants: formData.plants ? parseInt(formData.plants) : undefined,
+      });
+      setUser(user);
       router.push("/demo");
-    }, 1500);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred during registration.");
+      }
+      setIsLoading(false);
+    }
   };
 
   const Footer = () => (
@@ -74,6 +100,12 @@ export function RegisterPage() {
         footer={<Footer />}
       >
         
+        {error && (
+          <div className="p-3 mb-2 text-sm font-medium border rounded text-rose-400 bg-rose-500/10 border-rose-500/20">
+            {error}
+          </div>
+        )}
+
         {/* Organization Section */}
         <div className="flex flex-col gap-4">
           <h3 className="text-[10px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-800 pb-2">Organization Details</h3>

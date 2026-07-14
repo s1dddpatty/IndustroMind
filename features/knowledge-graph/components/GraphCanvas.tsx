@@ -147,7 +147,7 @@ export function GraphCanvas({ nodes, edges, searchQuery, selectedNodeId, onSelec
   }, [theme, selectedNodeId, hoveredNode, isSearchMatch]);
 
   return (
-    <div ref={containerRef} className="flex-1 relative overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black cursor-grab active:cursor-grabbing">
+    <div ref={containerRef} className="flex-1 w-full h-full relative overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black cursor-grab active:cursor-grabbing">
       
       {/* Background Grid */}
       <div 

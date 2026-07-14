@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { MOCK_COMPLIANCE_RULES, COMPLIANCE_STATS } from "../constants/complianceData";
+import { ComplianceRule, COMPLIANCE_STATS } from "../constants/complianceData";
 import { 
   ShieldCheck, 
   Search, 
@@ -17,15 +17,19 @@ import {
 } from "lucide-react";
 
 interface ComplianceListWorkspaceProps {
+  rules: ComplianceRule[];
+  stats: typeof COMPLIANCE_STATS;
+  loading: boolean;
   onSelectRule: (id: string) => void;
+  onRunScan: () => void;
 }
 
-export function ComplianceListWorkspace({ onSelectRule }: ComplianceListWorkspaceProps) {
+export function ComplianceListWorkspace({ rules, stats, loading, onSelectRule, onRunScan }: ComplianceListWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredRules = MOCK_COMPLIANCE_RULES.filter(r => 
+  const filteredRules = rules.filter(r => 
     r.regulationId.toLowerCase().includes(searchQuery.toLowerCase()) || 
     r.regulationName.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -62,16 +66,24 @@ export function ComplianceListWorkspace({ onSelectRule }: ComplianceListWorkspac
           <button className={`p-2 rounded-xl bg-slate-900/50 border ${tokens.card.border} hover:bg-slate-800 transition-colors text-slate-300`}>
             <Download className="w-4 h-4" />
           </button>
+          <button 
+            onClick={onRunScan}
+            disabled={loading}
+            className={`px-4 py-2 rounded-xl bg-orange-500 text-slate-950 font-bold hover:bg-orange-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-[0_0_20px_rgba(249,115,22,0.3)]`}
+          >
+            {loading ? <Activity className="w-4 h-4 animate-spin" /> : <ShieldCheck className="w-4 h-4" />}
+            {loading ? "Scanning..." : "Run Integrity Scan"}
+          </button>
         </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Overall Compliance", value: `${COMPLIANCE_STATS.overallScore}%`, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { label: "Open Violations", value: COMPLIANCE_STATS.openViolations, icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10" },
-          { label: "Critical Risk", value: COMPLIANCE_STATS.criticalViolations, icon: Activity, color: "text-red-500", bg: "bg-red-500/10" },
-          { label: "Knowledge Coverage", value: `${COMPLIANCE_STATS.knowledgeCoverage}%`, icon: BrainCircuit, color: "text-cyan-500", bg: "bg-cyan-500/10" },
+          { label: "Overall Compliance", value: `${stats.overallScore}%`, icon: ShieldCheck, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { label: "Open Violations", value: stats.openViolations, icon: AlertTriangle, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { label: "Critical Risk", value: stats.criticalViolations, icon: Activity, color: "text-red-500", bg: "bg-red-500/10" },
+          { label: "Knowledge Coverage", value: `${stats.knowledgeCoverage}%`, icon: BrainCircuit, color: "text-cyan-500", bg: "bg-cyan-500/10" },
         ].map((stat, i) => (
           <div key={i} className={`p-5 rounded-2xl bg-slate-900/40 border ${tokens.card.border} flex items-center gap-4`}>
             <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>

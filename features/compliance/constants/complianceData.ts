@@ -86,6 +86,27 @@ export interface ComplianceRule {
   owner: string;
   department: string;
   tags: string[];
+
+  // Source provenance metadata for future AI and traceability (not rendered)
+  backendMetadata?: {
+    sourceType: "contradiction" | "regulatoryDrift" | "mortality" | "mock";
+    backendId?: string;
+    backendEntityType?: string;
+    originalPayload?: any;
+    endpointOrigin?: string;
+    fetchedAt?: string;
+    adapterVersion?: string;
+  };
+
+  // AI Readiness fields (currently placeholders)
+  aiExplanation?: string;
+  aiConfidence?: number;
+  remediationPriority?: string;
+  supportingDocuments?: string[];
+  relatedGraphNodes?: string[];
+  relatedAssets?: string[];
+  generatedActionPlan?: string;
+  approvalWorkflow?: string;
 }
 
 export const MOCK_COMPLIANCE_RULES: ComplianceRule[] = [
@@ -213,7 +234,8 @@ export const MOCK_COMPLIANCE_RULES: ComplianceRule[] = [
 
     owner: "Safety & Integrity Dept",
     department: "HSE",
-    tags: ["fire-safety", "oisd", "valves"]
+    tags: ["fire-safety", "oisd", "valves"],
+    backendMetadata: { sourceType: "mock" }
   },
   {
     id: "comp-api-610",
@@ -301,7 +323,8 @@ export const MOCK_COMPLIANCE_RULES: ComplianceRule[] = [
 
     owner: "Reliability Engineering",
     department: "Maintenance",
-    tags: ["rotating-equipment", "api-610", "pumps"]
+    tags: ["rotating-equipment", "api-610", "pumps"],
+    backendMetadata: { sourceType: "mock" }
   },
   {
     id: "comp-osha-1910",
@@ -420,7 +443,8 @@ export const MOCK_COMPLIANCE_RULES: ComplianceRule[] = [
 
     owner: "Operations & HSE",
     department: "Plant Safety",
-    tags: ["loto", "safety", "osha"]
+    tags: ["loto", "safety", "osha"],
+    backendMetadata: { sourceType: "mock" }
   }
 ];
 

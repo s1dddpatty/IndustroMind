@@ -3,23 +3,26 @@
 import React, { useState } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { MOCK_INTELLIGENCE_REPORTS, REPORT_STATS } from "../constants/reportsData";
+import { IntelligenceReport, REPORT_STATS } from "../constants/reportsData";
 import { 
   Search, Filter, Download, ChevronRight, FileBarChart, 
   Sparkles, BrainCircuit, Activity, Clock, CheckCircle2, ShieldAlert
 } from "lucide-react";
 
 interface ReportListWorkspaceProps {
+  reports: IntelligenceReport[];
+  stats: typeof REPORT_STATS;
+  loading: boolean;
   onSelectReport: (id: string) => void;
   onGenerateReport: () => void;
 }
 
-export function ReportListWorkspace({ onSelectReport, onGenerateReport }: ReportListWorkspaceProps) {
+export function ReportListWorkspace({ reports, stats, loading, onSelectReport, onGenerateReport }: ReportListWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredReports = MOCK_INTELLIGENCE_REPORTS.filter(r => 
+  const filteredReports = reports.filter(r => 
     r.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -63,10 +66,10 @@ export function ReportListWorkspace({ onSelectReport, onGenerateReport }: Report
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
-          { label: "Generated Today", value: REPORT_STATS.generatedToday, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
-          { label: "Pending Approval", value: REPORT_STATS.pendingApproval, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
-          { label: "Critical Findings", value: REPORT_STATS.criticalReports, icon: ShieldAlert, color: "text-red-500", bg: "bg-red-500/10" },
-          { label: "AI Briefs Created", value: REPORT_STATS.aiGeneratedBriefs, icon: BrainCircuit, color: "text-pink-500", bg: "bg-pink-500/10" },
+          { label: "Generated Today", value: stats.generatedToday, icon: Activity, color: "text-emerald-500", bg: "bg-emerald-500/10" },
+          { label: "Pending Approval", value: stats.pendingApproval, icon: Clock, color: "text-amber-500", bg: "bg-amber-500/10" },
+          { label: "Critical Findings", value: stats.criticalReports, icon: ShieldAlert, color: "text-red-500", bg: "bg-red-500/10" },
+          { label: "AI Briefs Created", value: stats.aiGeneratedBriefs, icon: BrainCircuit, color: "text-pink-500", bg: "bg-pink-500/10" },
         ].map((stat, i) => (
           <div key={i} className={`p-5 rounded-2xl bg-slate-900/40 border ${tokens.card.border} flex items-center gap-4`}>
             <div className={`p-3 rounded-xl ${stat.bg} ${stat.color}`}>
@@ -123,13 +126,17 @@ export function ReportListWorkspace({ onSelectReport, onGenerateReport }: Report
                 <div className="flex items-center gap-2">
                   <span className={`relative flex h-2 w-2`}>
                     <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                      report.status === "Published" ? "bg-emerald-500" :
-                      report.status === "Pending Approval" ? "bg-amber-500" : "bg-slate-500"
+                      report.status === "Published" || report.status === "completed" ? "bg-emerald-500" :
+                      report.status === "Pending Approval" ? "bg-amber-500" : 
+                      report.status === "processing" || report.status === "queued" ? "bg-pink-500" :
+                      report.status === "failed" ? "bg-red-500" : "bg-slate-500"
                     }`}></span>
                   </span>
                   <span className={`text-[11px] font-bold uppercase ${
-                    report.status === "Published" ? "text-emerald-500" :
-                    report.status === "Pending Approval" ? "text-amber-500" : "text-slate-500"
+                    report.status === "Published" || report.status === "completed" ? "text-emerald-500" :
+                    report.status === "Pending Approval" ? "text-amber-500" : 
+                    report.status === "processing" || report.status === "queued" ? "text-pink-500" :
+                    report.status === "failed" ? "text-red-500" : "text-slate-500"
                   }`}>{report.status}</span>
                 </div>
               </div>

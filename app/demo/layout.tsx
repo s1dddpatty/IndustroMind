@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { PageLayout } from "@/features/app-shell/components/PageLayout";
 import { ThemeProvider } from "@/providers/ThemeProvider";
+import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -11,9 +12,11 @@ export const metadata: Metadata = {
 export default function DemoLayout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
-      <PageLayout>
-        {children}
-      </PageLayout>
+      <ProtectedRoute>
+        <PageLayout>
+          {children}
+        </PageLayout>
+      </ProtectedRoute>
     </ThemeProvider>
   );
 }

@@ -14,7 +14,7 @@ interface DocumentsWorkspaceProps {
   data: DocumentData[];
   onBack: () => void;
   onSelectDocument: (id: string) => void;
-  onUpload?: () => void;
+  onUpload?: (file: File) => void;
 }
 
 const formatDate = (isoString: string) => {
@@ -25,6 +25,7 @@ const formatDate = (isoString: string) => {
 export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }: DocumentsWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
   
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("All");
@@ -63,8 +64,22 @@ export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }:
             </div>
           </div>
           
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept=".pdf,.txt,.doc,.docx,.xlsx" 
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file && onUpload) {
+                onUpload(file);
+              }
+              // Reset input so the same file can be uploaded again if needed
+              if (e.target) e.target.value = "";
+            }} 
+          />
           <button 
-            onClick={onUpload}
+            onClick={() => fileInputRef.current?.click()}
             className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 text-sm font-medium"
           >
             <Upload className="w-4 h-4" /> Upload Document

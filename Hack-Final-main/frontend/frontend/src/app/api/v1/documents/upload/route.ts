@@ -1,0 +1,10 @@
+import { NextResponse } from 'next/server';
+
+export async function POST(request: Request) {
+  return NextResponse.json({
+    success: true,
+    data: { documentId: "doc-123", status: "processing" },
+    message: "Success",
+    timestamp: new Date().toISOString()
+  });
+}

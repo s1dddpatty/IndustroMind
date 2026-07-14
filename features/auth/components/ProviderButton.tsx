@@ -2,13 +2,16 @@
 
 import React from "react";
 
+import { Loader2 } from "lucide-react";
+
 interface ProviderButtonProps {
   provider: "Google" | "Microsoft" | "Azure AD";
   onClick: () => void;
   disabled?: boolean;
+  isLoading?: boolean;
 }
 
-export function ProviderButton({ provider, onClick, disabled }: ProviderButtonProps) {
+export function ProviderButton({ provider, onClick, disabled, isLoading }: ProviderButtonProps) {
   const getIcon = () => {
     switch (provider) {
       case "Google":
@@ -37,10 +40,10 @@ export function ProviderButton({ provider, onClick, disabled }: ProviderButtonPr
     <button
       type="button"
       onClick={onClick}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       className="flex items-center justify-center gap-3 w-full h-12 rounded-xl bg-slate-900 border border-slate-800 text-[13px] font-bold text-white hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      {getIcon()}
+      {isLoading ? <Loader2 className="w-5 h-5 animate-spin text-slate-400" /> : getIcon()}
       Continue with {provider}
     </button>
   );

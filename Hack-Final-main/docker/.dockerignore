@@ -1,0 +1,10 @@
+.venv
+.idea
+.git
+.gitignore
+*.md
+data/uploads
+__pycache__
+*.pyc
+.env
+.env.*

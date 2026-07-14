@@ -6,35 +6,63 @@ import { AuthCard } from "../components/AuthCard";
 import { InputField, PasswordField } from "../components/FormInputs";
 import { ProviderButton, FormDivider } from "../components/ProviderButton";
 import { useRouter } from "next/navigation";
+import { authService } from "../services/authService";
+import { ApiError } from "../../../lib/api/errors";
+import { useAuth } from "../../../contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 export function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isConnecting, setIsConnecting] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
     
-    // Simulate backend auth delay, then redirect to dashboard
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const user = await authService.login({ email, password });
+      setUser(user);
       router.push("/demo");
-    }, 1200);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred during login.");
+      }
+      setIsLoading(false);
+    }
   };
 
   const handleProviderLogin = (provider: string) => {
-    console.log(`Connecting to ${provider} API...`);
-    // Future backend integration
+    setIsConnecting(provider);
+    
+    // Simulate API connection delay
+    setTimeout(() => {
+      setIsConnecting(null);
+      // For demo purposes, any integration connects successfully
+    }, 1500);
   };
 
   const Footer = () => (
     <div className="flex flex-col gap-6">
       <FormDivider />
       <div className="flex flex-col gap-3">
-        <ProviderButton provider="Microsoft" onClick={() => handleProviderLogin("Microsoft")} />
-        <ProviderButton provider="Google" onClick={() => handleProviderLogin("Google")} />
+        <ProviderButton 
+          provider="Microsoft" 
+          onClick={() => handleProviderLogin("Microsoft")} 
+          isLoading={isConnecting === "Microsoft"}
+        />
+        <ProviderButton 
+          provider="Google" 
+          onClick={() => handleProviderLogin("Google")} 
+          isLoading={isConnecting === "Google"}
+        />
       </div>
       <p className="text-center text-[13px] font-medium text-slate-400 mt-2">
         Don't have an organization?{" "}
@@ -54,6 +82,12 @@ export function LoginPage() {
       onSubmit={handleLogin}
       footer={<Footer />}
     >
+      {error && (
+        <div className="p-3 mb-2 text-sm font-medium border rounded text-rose-400 bg-rose-500/10 border-rose-500/20">
+          {error}
+        </div>
+      )}
+      
       <InputField
         label="Work Email"
         type="email"

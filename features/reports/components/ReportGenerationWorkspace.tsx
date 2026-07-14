@@ -6,7 +6,11 @@ import { BrainCircuit, Database, FileText, Network, CheckCircle2, Server, Shield
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
 
+import { IntelligenceReport } from "../constants/reportsData";
+
 interface ReportGenerationWorkspaceProps {
+  reportId: string;
+  reports: IntelligenceReport[];
   onComplete: () => void;
 }
 
@@ -21,32 +25,45 @@ const GENERATION_STEPS = [
   { id: 8, text: "Finalizing Intelligence Report...", icon: CheckCircle2 }
 ];
 
-export function ReportGenerationWorkspace({ onComplete }: ReportGenerationWorkspaceProps) {
+export function ReportGenerationWorkspace({ reportId, reports, onComplete }: ReportGenerationWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
+  
+  const report = reports.find(r => r.id === reportId);
+  const isCompleted = report?.status === "Published" || report?.status === "completed";
   
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
+  // Fast-track if completed immediately
   useEffect(() => {
-    // Simulate generation pipeline
-    const totalTime = 6000; // 6 seconds total
+    if (isCompleted) {
+      setProgress(100);
+      setCurrentStep(GENERATION_STEPS.length - 1);
+      const timer = setTimeout(() => onComplete(), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [isCompleted, onComplete]);
+
+  useEffect(() => {
+    if (isCompleted) return;
+
+    // Simulate progress while waiting for backend polling
+    // Hold at 95% if backend is still processing
+    const totalTime = 12000; // Stretch to 12s for long polls
     const stepTime = totalTime / GENERATION_STEPS.length;
     
     let currentProgress = 0;
     const progressInterval = setInterval(() => {
-      currentProgress += (100 / (totalTime / 50));
-      if (currentProgress > 100) currentProgress = 100;
+      currentProgress += (95 / (totalTime / 50));
+      if (currentProgress > 95) currentProgress = 95;
       setProgress(currentProgress);
     }, 50);
 
     const stepInterval = setInterval(() => {
       setCurrentStep(prev => {
-        if (prev >= GENERATION_STEPS.length - 1) {
-          clearInterval(stepInterval);
-          clearInterval(progressInterval);
-          setTimeout(() => onComplete(), 500); // Wait a beat before transitioning
-          return prev;
+        if (prev >= GENERATION_STEPS.length - 2) {
+          return GENERATION_STEPS.length - 2; // hold on the second to last step
         }
         return prev + 1;
       });
@@ -56,7 +73,7 @@ export function ReportGenerationWorkspace({ onComplete }: ReportGenerationWorksp
       clearInterval(stepInterval);
       clearInterval(progressInterval);
     };
-  }, [onComplete]);
+  }, [isCompleted]);
 
   return (
     <div className="flex-1 w-full flex items-center justify-center p-8">

@@ -1,27 +1,33 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { MOCK_KG_DATA } from "../constants/graphData";
+import React, { useState, useMemo, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useKnowledgeGraph } from "../hooks/useKnowledgeGraph";
 import { KnowledgeAnalyticsRow } from "../components/KnowledgeAnalyticsRow";
 import { GraphFiltersPanel } from "../components/GraphFiltersPanel";
 import { GraphCanvas } from "../components/GraphCanvas";
 import { NodeDetailPanel } from "../components/NodeDetailPanel";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
+import { Skeleton } from "@/features/shared/components/ui/Skeleton";
+import { ErrorState } from "@/features/shared/components/ui/ErrorState";
 
 export function KnowledgeGraphPage() {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
+  const { graph, selectedNode, stats, loading, error, refresh, selectNode } = useKnowledgeGraph();
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
+  const [activeNodeTypes, setActiveNodeTypes] = useState<Set<string>>(new Set());
+  const [activeRelTypes, setActiveRelTypes] = useState<Set<string>>(new Set());
 
-  // Initialize filter state with all unique categories and relationship types
-  const allNodeTypes = Array.from(new Set(MOCK_KG_DATA.nodes.map(n => n.category)));
-  const allRelTypes = Array.from(new Set(MOCK_KG_DATA.edges.map(e => e.relationship)));
-
-  const [activeNodeTypes, setActiveNodeTypes] = useState<Set<string>>(new Set(allNodeTypes));
-  const [activeRelTypes, setActiveRelTypes] = useState<Set<string>>(new Set(allRelTypes));
+  // Initialize filters once data is loaded
+  useEffect(() => {
+    if (graph) {
+      setActiveNodeTypes(new Set(Array.from(new Set(graph.nodes.map(n => n.category)))));
+      setActiveRelTypes(new Set(Array.from(new Set(graph.edges.map(e => e.relationship)))));
+    }
+  }, [graph]);
 
   const toggleNodeType = (id: string) => {
     const next = new Set(activeNodeTypes);
@@ -29,11 +35,9 @@ export function KnowledgeGraphPage() {
     else next.add(id);
     setActiveNodeTypes(next);
     
-    // Clear selection if selected node is filtered out
-    if (selectedNodeId) {
-      const node = MOCK_KG_DATA.nodes.find(n => n.id === selectedNodeId);
-      if (node && (next.has(id) === false && node.category === id)) {
-        setSelectedNodeId(null);
+    if (selectedNode) {
+      if (next.has(selectedNode.category) === false) {
+        selectNode(null);
       }
     }
   };
@@ -45,15 +49,14 @@ export function KnowledgeGraphPage() {
     setActiveRelTypes(next);
   };
 
-  // Derive visible graph data
   const filteredNodes = useMemo(() => {
-    return MOCK_KG_DATA.nodes.filter(n => activeNodeTypes.has(n.category));
-  }, [activeNodeTypes]);
+    if (!graph) return [];
+    return graph.nodes.filter(n => activeNodeTypes.has(n.category));
+  }, [graph, activeNodeTypes]);
 
   const filteredEdges = useMemo(() => {
-    // Only show edges where BOTH source and target are visible, AND the relationship type is active
-    return MOCK_KG_DATA.edges.filter(e => {
-      // Depending on if the edge has been mutated by react-force-graph yet, source/target might be objects
+    if (!graph) return [];
+    return graph.edges.filter(e => {
       const sourceId = typeof e.source === 'object' ? (e.source as any).id : e.source;
       const targetId = typeof e.target === 'object' ? (e.target as any).id : e.target;
       
@@ -62,15 +65,14 @@ export function KnowledgeGraphPage() {
       
       return isSourceVisible && isTargetVisible && activeRelTypes.has(e.relationship);
     });
-  }, [activeRelTypes, filteredNodes]);
-
-  const selectedNode = selectedNodeId ? MOCK_KG_DATA.nodes.find(n => n.id === selectedNodeId) : null;
+  }, [graph, activeRelTypes, filteredNodes]);
 
   return (
     <div className="flex flex-col w-full h-full min-h-0">
-      
       <div className="shrink-0 mb-4">
-        <KnowledgeAnalyticsRow analytics={MOCK_KG_DATA.analytics} />
+        {stats && (
+          <KnowledgeAnalyticsRow analytics={stats} />
+        )}
       </div>
 
       <div className={`flex-1 min-h-0 flex bg-slate-950 rounded-2xl border ${tokens.card.border} overflow-hidden shadow-2xl relative`}>
@@ -84,19 +86,31 @@ export function KnowledgeGraphPage() {
           onToggleRel={toggleRelType}
         />
 
-        <GraphCanvas 
-          nodes={filteredNodes}
-          edges={filteredEdges}
-          searchQuery={searchQuery}
-          selectedNodeId={selectedNodeId}
-          onSelectNode={setSelectedNodeId}
-        />
+        <div className="flex-1 relative min-h-0 bg-[#0A0F16]">
+          {loading && !graph ? (
+            <div className="absolute inset-0 flex flex-col p-4 bg-[#0A0F16]/50 backdrop-blur-sm z-20 gap-4">
+              <Skeleton className="w-full h-full" rounded="xl" />
+            </div>
+          ) : error ? (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#0A0F16] z-20 p-8">
+              <ErrorState title="Graph Rendering Failed" message={error.message || "Failed to load Knowledge Graph data."} onRetry={refresh} />
+            </div>
+          ) : (
+            <GraphCanvas 
+              nodes={filteredNodes}
+              edges={filteredEdges}
+              searchQuery={searchQuery}
+              selectedNodeId={selectedNode?.id || null}
+              onSelectNode={selectNode}
+            />
+          )}
+        </div>
 
         {selectedNode && (
           <NodeDetailPanel 
             node={selectedNode}
-            edges={filteredEdges} // Pass filtered edges to inspector
-            onClose={() => setSelectedNodeId(null)}
+            edges={filteredEdges}
+            onClose={() => selectNode(null)}
           />
         )}
 

@@ -22,13 +22,10 @@ export function KnowledgeGraphOverview({ data, className = "", onExpand }: Knowl
       <div className="flex items-center justify-between mb-2 z-10">
         <h2 className={`text-lg font-bold ${tokens.text.primary}`}>{data.title}</h2>
         <button 
-          onClick={() => {
-            console.log("View Graph clicked");
-            if (onExpand) onExpand();
-          }}
-          className="flex items-center gap-1.5 text-sm font-medium text-brand hover:text-brand/80 transition-colors"
-        >
-          View Graph <ArrowRight className="w-4 h-4" />
+          onClick={onExpand}
+          className={`p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors border ${tokens.card.border}`}
+          aria-label="View Graph"
+        ><ArrowRight className="w-4 h-4" />
         </button>
       </div>
       

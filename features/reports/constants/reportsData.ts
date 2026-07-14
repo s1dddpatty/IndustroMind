@@ -64,7 +64,7 @@ export interface IntelligenceReport {
   title: string;
   reportType: "Daily Operations Summary" | "Maintenance Summary" | "Compliance Status Report" | "Safety Performance Report" | "Asset Health Report" | "Inspection Summary" | "Knowledge Gap Report" | "Cross-functional Intelligence Report";
   category: "Executive" | "Maintenance" | "Compliance" | "Safety" | "Operations" | "Asset" | "Knowledge";
-  status: "Draft" | "Pending Approval" | "Published" | "Archived";
+  status: "Draft" | "Pending Approval" | "Published" | "Archived" | "queued" | "processing" | "completed" | "failed" | "cancelled" | "expired";
   
   generatedBy: string;
   generatedAt: string;
@@ -80,6 +80,31 @@ export interface IntelligenceReport {
   decisionPanel: ExecutiveDecisionPanel;
   knowledgeInsights: string[];
   history: ReportVersion[];
+
+  // Source provenance metadata
+  backendMetadata?: {
+    backendId?: string;
+    originalPayload?: any;
+    endpointOrigin?: string;
+    fetchedAt?: string;
+    adapterVersion?: string;
+  };
+
+  // AI Readiness fields (optional future capability)
+  aiExecutiveSummary?: string;
+  aiRecommendations?: string[];
+  aiConfidenceScore?: number;
+  relatedDocuments?: string[];
+  relatedAssetsList?: string[];
+  relatedGraphNodes?: string[];
+  complianceImpact?: string;
+  knowledgeImpact?: string;
+  suggestedActionsList?: string[];
+  
+  // Future capabilities
+  scheduled?: boolean;
+  recurring?: boolean;
+  isShared?: boolean;
 }
 
 export const MOCK_INTELLIGENCE_REPORTS: IntelligenceReport[] = [

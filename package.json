@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.1",
+    "axios": "^1.18.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.0.0",
     "gsap": "^3.12.5",
@@ -18,7 +19,8 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-force-graph-2d": "^1.29.1",
-    "tailwind-merge": "^2.5.5"
+    "tailwind-merge": "^2.5.5",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
