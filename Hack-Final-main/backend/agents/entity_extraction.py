@@ -21,9 +21,11 @@ class ExtractedEntity(BaseModel):
     @field_validator("type")
     @classmethod
     def validate_type(cls, v: str) -> str:
-        if v not in LOCKED_NODE_LABELS:
-            raise ValueError(f"Invalid node label '{v}'. Must be one of {LOCKED_NODE_LABELS}")
-        return v
+        # Normalize casing (e.g. equipment -> Equipment, procedure -> Procedure)
+        for label in LOCKED_NODE_LABELS:
+            if v.strip().lower() == label.lower():
+                return label
+        return "Equipment"
 
 class EntityExtractionAgent:
     """
@@ -93,7 +95,12 @@ class EntityExtractionAgent:
             mock_fallback=mock_fallback
         )
 
-        raw_entities = raw_result.get("entities", [])
+        if isinstance(raw_result, list):
+            raw_entities = raw_result
+        elif isinstance(raw_result, dict):
+            raw_entities = raw_result.get("entities", raw_result.get("items", []))
+        else:
+            raw_entities = []
         validated_entities = []
 
         for item in raw_entities:

@@ -44,5 +44,19 @@ export const documentService = {
       }
       throw error;
     }
+  },
+
+  /**
+   * Deletes a document by ID and refreshes knowledge graph state
+   */
+  async deleteDocument(id: string): Promise<void> {
+    await documentRepository.deleteDocument(id);
+  },
+
+  /**
+   * Clears all documents and wipes knowledge graph state
+   */
+  async clearAllDocuments(): Promise<void> {
+    await documentRepository.clearAllDocuments();
   }
 };

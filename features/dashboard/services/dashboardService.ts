@@ -16,7 +16,7 @@ export const dashboardService = {
   /**
    * Fetches the dashboard overview data.
    */
-  async getDashboardData(forceRefresh = false, signal?: AbortSignal): Promise<DashboardData> {
+  async getDashboardData(forceRefresh = true, signal?: AbortSignal): Promise<DashboardData> {
     if (!forceRefresh && cachedDashboardData) {
       return cachedDashboardData;
     }
@@ -47,7 +47,7 @@ export const dashboardService = {
     ]);
 
     const allFailed = alertsRes.status === "rejected" && documentsRes.status === "rejected" && graphNodesRes.status === "rejected";
-    
+
     if (APP_MODE === "AUTO" && allFailed) {
       console.warn("Backend unreachable, falling back to DEMO mode for Dashboard.");
       cachedDashboardData = DASHBOARD_DATA;
@@ -64,7 +64,7 @@ export const dashboardService = {
       aiBriefRes.status === "fulfilled" ? aiBriefRes.value : null,
       queriesRes.status === "fulfilled" ? queriesRes.value : []
     );
-    
+
     return cachedDashboardData;
   },
 

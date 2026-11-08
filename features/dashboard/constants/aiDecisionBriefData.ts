@@ -55,120 +55,140 @@ export interface AiDecisionBrief {
 
 export const MOCK_AI_BRIEFS: AiDecisionBrief[] = [
   {
-    id: "brief-001",
-    title: "Morning Shift Brief",
-    createdAt: new Date(Date.now() - 30 * 60000).toISOString(),
-    plantId: "Sample Plant - Steel Manufacturing",
-    shift: "Morning (06:00 - 14:00)",
-    confidenceScore: 92,
-    status: "Ready",
-    previewBullets: [
-      "3 high-priority issues identified",
-      "7 SOPs require attention",
-      "All critical assets operational",
-      "No safety incidents in last 24h"
-    ],
-    executiveSummary: "The plant is operating at 94% overall efficiency. No critical failures detected overnight. However, minor anomalies in Pump P-201 and potential compliance drifts in Zone B require attention before the afternoon peak.",
-    operationalRisks: [
-      { id: "risk-1", title: "Vibration Anomaly", severity: "Medium", description: "Pump P-201 showing 12% increase in vibration." },
-      { id: "risk-2", title: "Temperature Spike", severity: "Low", description: "Cooling Tower 3 water return temp elevated by 2°C." }
-    ],
-    complianceSummary: [
-      { id: "comp-1", status: "Warning", details: "OISD-116 standard update requires review for 7 SOPs." }
-    ],
-    maintenanceRecommendations: [
-      { id: "maint-1", asset: "Pump P-201", action: "Schedule predictive maintenance for bearing replacement.", priority: "Normal" }
-    ],
-    inspectionPriorities: [
-      "Zone B Storage Tanks - Routine structural check",
-      "Cooling Tower 3 - Thermal imaging scan"
-    ],
-    aiSuggestedActions: [
-      { id: "act-1", action: "Pre-order Bearing SK-44", impact: "Prevents 4h downtime if P-201 fails." },
-      { id: "act-2", action: "Distribute OISD-116 summary", impact: "Ensures compliance across 3 shifts." }
-    ],
-    predictedBottlenecks: [
-      "Material flow at Conveyor Belt C expected to slow by 15% due to scheduled upstream maintenance at 10:00 AM."
-    ],
-    requiredHumanDecisions: [
-      { id: "dec-1", decision: "Approve P-201 maintenance window for tomorrow", deadline: "Today, 14:00" }
-    ]
-  },
-  {
-    id: "brief-002",
-    title: "Safety Inspection Brief",
-    createdAt: new Date(Date.now() - 120 * 60000).toISOString(),
-    plantId: "Sample Plant - Steel Manufacturing",
-    shift: "Night (22:00 - 06:00)",
-    confidenceScore: 88,
-    status: "Review Required",
-    previewBullets: [
-      "2 safety near-misses recorded",
-      "Hazmat storage compliance at 98%",
-      "Emergency suppression system test passed",
-      "PPE compliance flagged in Sector 4"
-    ],
-    executiveSummary: "Overall safety posture remains strong. Night shift reported two minor near-misses involving forklift traffic in Sector 4. PPE compliance monitoring detected a 5% drop in hard-hat adherence during the 03:00 break period.",
-    operationalRisks: [
-      { id: "risk-3", title: "Forklift Traffic Convergence", severity: "High", description: "Sector 4 intersection lacking convex mirrors." },
-      { id: "risk-4", title: "PPE Non-compliance", severity: "Medium", description: "Hard-hat adherence dropped during night shift." }
-    ],
-    complianceSummary: [
-      { id: "comp-2", status: "Violation", details: "Hazmat Log Book incomplete for Chemical Storage Bay C." }
-    ],
-    maintenanceRecommendations: [
-      { id: "maint-2", asset: "Sector 4 Mirrors", action: "Install wide-angle traffic mirrors at intersection.", priority: "Urgent" }
-    ],
-    inspectionPriorities: [
-      "Chemical Storage Bay C - Complete log book audit",
-      "Sector 4 - PPE spot checks"
-    ],
-    aiSuggestedActions: [
-      { id: "act-3", action: "Conduct 5-minute safety stand-down", impact: "Reinforces PPE requirements." }
-    ],
-    predictedBottlenecks: [
-      "None predicted related to safety operations."
-    ],
-    requiredHumanDecisions: [
-      { id: "dec-2", decision: "Sign off on Hazmat Audit correction", deadline: "Today, 17:00" }
-    ]
-  },
-  {
-    id: "brief-003",
-    title: "Maintenance Review",
-    createdAt: new Date(Date.now() - 240 * 60000).toISOString(),
-    plantId: "Sample Plant - Steel Manufacturing",
-    shift: "Day (06:00 - 18:00)",
+    id: "brief-p204",
+    title: "Centrifugal Pump P-204 Isolation Assessment",
+    createdAt: new Date().toISOString(),
+    plantId: "Unit 3 - Hydrocarbon Processing",
+    shift: "Operational",
     confidenceScore: 96,
     status: "Ready",
     previewBullets: [
-      "12 work orders closed successfully",
-      "3 predictive alerts generated",
-      "Spare parts inventory optimal",
-      "Contractor permits verified"
+      "SOP-MECH-042 mandates 5-step LOTO sequence prior to mechanical seal maintenance",
+      "Critical contradiction detected: Suction valve V-101 closed state prevents seal MS-204 thermal flush",
+      "Mandatory zero-pressure verification on PT-302 and electrical lockout at MCC-4B"
     ],
-    executiveSummary: "Maintenance execution is on schedule. The new predictive model has successfully identified three early-stage wear patterns, allowing us to transition them from reactive to planned maintenance.",
+    executiveSummary: "Centrifugal Pump P-204 in Unit 3 was evaluated against SOP-MECH-042 and OEM maintenance manuals. While the LOTO sequence provides robust electrical and pressure isolation, AI detected a procedural contradiction where complete closure of suction valve V-101 causes dry-run face friction on mechanical seal MS-204 during warm-up recirculation.",
     operationalRisks: [
-      { id: "risk-5", title: "Conveyor Belt Wear", severity: "Medium", description: "Belt CB-09 showing edge fraying." }
+      {
+        id: "risk-1",
+        title: "Thermal Shock & Micro-Fracturing",
+        severity: "High",
+        description: "Dry running seal MS-204 for more than 45 seconds during cold restart causes carbon face micro-fracturing."
+      },
+      {
+        id: "risk-2",
+        title: "Residual Header Pressure",
+        severity: "Medium",
+        description: "Discharge valve V-102 manifold retains up to 280 psi until manual bleed-down is confirmed."
+      }
     ],
     complianceSummary: [
-      { id: "comp-3", status: "Compliant", details: "All contractor permits and safety inductions are current." }
+      {
+        id: "comp-1",
+        status: "Warning",
+        details: "SOP-MECH-042 requires amendment to incorporate 5% suction valve cracked-open bypass for seal flush."
+      },
+      {
+        id: "comp-2",
+        status: "Compliant",
+        details: "Electrical lockout aligns with OSHA 29 CFR 1910.147 requirements."
+      }
     ],
     maintenanceRecommendations: [
-      { id: "maint-3", asset: "Belt CB-09", action: "Schedule belt splicing and repair.", priority: "Normal" },
-      { id: "maint-4", asset: "Compressor A", action: "Replace oil filter (predictive alert).", priority: "Normal" }
+      {
+        id: "maint-1",
+        asset: "Pump P-204",
+        action: "Inspect cartridge mechanical seal MS-204 wear depth (< 1.2mm safe threshold)",
+        priority: "Urgent"
+      },
+      {
+        id: "maint-2",
+        asset: "Valve V-101",
+        action: "Calibrate position limiter to ensure exact 5% bypass during thermal flush",
+        priority: "Normal"
+      }
     ],
     inspectionPriorities: [
-      "Conveyor Belt CB-09 - Detailed thickness check"
+      "Confirm PT-302 indicates 0.0 psi prior to unbolting seal gland plate",
+      "Inspect seal barrier fluid pot level and pressure gauge (Plan 53A)",
+      "Log baseline vibration velocity on inboard bearing housing after restart"
     ],
     aiSuggestedActions: [
-      { id: "act-4", action: "Allocate 2 technicians for CB-09 repair", impact: "Ensures repair fits within 2h window." }
+      {
+        id: "act-1",
+        action: "Issue interim Engineering Variance Permit for SOP-MECH-042 warm-up sequence",
+        impact: "Prevents repeated seal failure and eliminates hydrocarbon leakage risk"
+      }
     ],
     predictedBottlenecks: [
-      "Compressor A downtime will reduce pneumatic capacity by 10% for 45 minutes."
+      "Barrier fluid refill lead time if reservoir is drained during seal inspection",
+      "Manual sign-off required from Unit 3 Control Room operator before MCC-4B re-energization"
     ],
     requiredHumanDecisions: [
-      { id: "dec-3", decision: "Approve overtime for weekend preventive maintenance", deadline: "Tomorrow, 12:00" }
+      {
+        id: "dec-1",
+        decision: "Approve 5% suction valve bypass clause in SOP-MECH-042",
+        deadline: "Next Maintenance Shift"
+      }
+    ]
+  },
+  {
+    id: "brief-unit3-overview",
+    title: "Unit 3 Rotating Equipment Integrity Brief",
+    createdAt: new Date().toISOString(),
+    plantId: "Unit 3 - Hydrocarbon Processing",
+    shift: "Operational",
+    confidenceScore: 94,
+    status: "Ready",
+    previewBullets: [
+      "Overall rotating machinery health at 92% across Unit 3 train",
+      "Suction and discharge isolation valve integrity verified on lines 301 & 302",
+      "Historical incident INC-2023-09 lessons incorporated into active operating envelope"
+    ],
+    executiveSummary: "Multi-asset operational scan across Unit 3 hydrocarbon pumps and isolation valves confirms that overall system integrity is high. Knowledge Graph traversal identified that maintenance history and operational safety protocols are thoroughly documented with cross-references to OSHA 29 CFR 1910.147 and ISO 13709.",
+    operationalRisks: [
+      {
+        id: "risk-3",
+        title: "Cold-Start Viscosity Drag",
+        severity: "Medium",
+        description: "Process fluid viscosity spikes below 15°C ambient temperature require extended line recirculation."
+      }
+    ],
+    complianceSummary: [
+      {
+        id: "comp-3",
+        status: "Compliant",
+        details: "All Unit 3 isolation procedures comply with ISO 13709 centrifugal pump standards."
+      }
+    ],
+    maintenanceRecommendations: [
+      {
+        id: "maint-3",
+        asset: "Valve V-102",
+        action: "Perform ultrasonic leak-by detection on discharge seat",
+        priority: "Normal"
+      }
+    ],
+    inspectionPriorities: [
+      "Monthly acoustic inspection on P-204 bearing housings",
+      "Quarterly pressure transmitter calibration on PT-302"
+    ],
+    aiSuggestedActions: [
+      {
+        id: "act-2",
+        action: "Schedule automated telemetry ingestion for vibration and temperature sensors",
+        impact: "Enables predictive bearing wear alerts 30 days prior to threshold breach"
+      }
+    ],
+    predictedBottlenecks: [
+      "Calibration technician availability for Unit 3 shutdown window"
+    ],
+    requiredHumanDecisions: [
+      {
+        id: "dec-2",
+        decision: "Sign off on quarterly compliance audit report",
+        deadline: "End of Quarter"
+      }
     ]
   }
 ];

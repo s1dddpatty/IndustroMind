@@ -53,6 +53,9 @@ class DocumentClassificationAgent:
             mock_fallback=mock_fallback
         )
 
+        if isinstance(result, list):
+            result = result[0] if (result and isinstance(result[0], dict)) else mock_fallback
+
         category = result.get("category", "Unknown")
         if category not in VALID_CATEGORIES:
             category = "Unknown"

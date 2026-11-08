@@ -51,20 +51,6 @@ class RegulatoryDriftEngine:
                         "action_required": "Pending Review - Update SOP to match new regulatory standard."
                     })
 
-        # Default fallback if empty during standalone testing
-        if not outdated_procedures and not unmapped_regulations:
-            outdated_procedures.append({
-                "procedure": "SOP-MECH-042",
-                "governing_regulation": "OSHA 29 CFR 1910.147 (2018 Rev)",
-                "superseded_by": "OSHA 29 CFR 1910.147 (2025 Standard Update)",
-                "action_required": "Pending Review - Digital lockout verification step mandatory."
-            })
-            unmapped_regulations.append({
-                "regulation": "EPA 40 CFR Part 68 (Risk Management Plan)",
-                "status": "Unmapped",
-                "risk": "High - No SOP linked via GOVERNED_BY relationship."
-            })
-
         return {
             "org_id": org_id,
             "drift_status": "Action Required" if (outdated_procedures or unmapped_regulations) else "Compliant",

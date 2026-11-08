@@ -13,6 +13,10 @@ export const apiClient = axios.create({
 // Request Interceptor
 apiClient.interceptors.request.use(
   (config) => {
+    // Prevent duplicate /api/v1 prefixes if baseURL already ends with /api/v1
+    if (config.url && config.url.startsWith("/api/v1/")) {
+      config.url = config.url.substring("/api/v1".length);
+    }
     const token = getSessionToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -26,18 +30,10 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Global 401 handling
     if (error.response?.status === 401) {
-      // Skip clearing session if the request was actually to the login endpoint
-      if (error.config?.url && !error.config.url.includes("/auth/login")) {
-        clearSession();
-        if (typeof window !== "undefined") {
-          window.location.href = "/auth/login";
-        }
-      }
+      console.warn("401 Unauthorized encountered on:", error.config?.url);
+      clearSession();
     }
-    
-    // Always reject so the repository layer can handle the specific error mapping
     return Promise.reject(error);
   }
 );

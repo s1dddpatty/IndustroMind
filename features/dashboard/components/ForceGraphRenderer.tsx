@@ -9,7 +9,7 @@ import { GraphData, GraphNode, NodeType, NodeStatus } from '../constants/knowled
 import { Loader2 } from 'lucide-react';
 
 // @ts-ignore
-const ForceGraph2D: any = dynamic(() => import('react-force-graph-2d'), { 
+const ForceGraph2D: any = dynamic(() => import('react-force-graph-2d'), {
   ssr: false,
   loading: () => (
     <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-3">
@@ -28,7 +28,14 @@ const TYPE_COLORS: Record<string, string> = {
   Maintenance: "#06b6d4",
   Inspection: "#f97316",
   "AI Insight": "#10b981",
-  Personnel: "#64748b"
+  Personnel: "#64748b",
+  Plant: "#06b6d4",
+  Organization: "#6366f1",
+  Regulation: "#f59e0b",
+  PIDElement: "#8b5cf6",
+  Incident: "#ef4444",
+  Expert: "#ec4899",
+  ExpertInsight: "#a855f7"
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -127,16 +134,16 @@ export function ForceGraphRenderer({ data, interactive = true, onNodeClick, sele
     const statusColor = STATUS_COLORS[node.status as NodeStatus] || "rgba(255,255,255,0.1)";
 
     const isSelected = selectedNodeId === node.id || hoveredNode?.id === node.id;
-    
+
     let isNeighbor = false;
     const activeNode = selectedNodeId || hoveredNode?.id;
     if (activeNode) {
       isNeighbor = neighbors.get(activeNode)?.has(node.id) || false;
     }
-    
+
     // Dim unrelated nodes if something is selected or hovered
     const isUnrelated = activeNode && !isSelected && !isNeighbor;
-    
+
     ctx.globalAlpha = isUnrelated ? 0.2 : 1;
 
     // Draw glow/status ring
@@ -155,7 +162,7 @@ export function ForceGraphRenderer({ data, interactive = true, onNodeClick, sele
     ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI, false);
     ctx.fillStyle = theme === 'dark' ? "#1e293b" : "#ffffff";
     ctx.fill();
-    
+
     ctx.lineWidth = isSelected ? 2 : 1;
     ctx.strokeStyle = typeColor;
     ctx.stroke();
@@ -177,7 +184,7 @@ export function ForceGraphRenderer({ data, interactive = true, onNodeClick, sele
       ctx.fillStyle = theme === 'dark' ? "#f8fafc" : "#0f172a";
       ctx.fillText(label, node.x, node.y + radius + (8 / globalScale));
     }
-    
+
     ctx.globalAlpha = 1;
   }, [theme, hoveredNode, selectedNodeId, neighbors]);
 

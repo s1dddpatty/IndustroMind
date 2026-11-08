@@ -8,8 +8,8 @@ export const API_ROUTES = {
     ALERTS: "/dashboard/alerts",
   },
   DOCUMENTS: {
-    LIST: "/api/v1/documents/",
-    UPLOAD: "/api/v1/documents/upload",
+    LIST: "/documents",
+    UPLOAD: "/documents/upload",
   },
   GRAPH: {
     NODES: "/graph/nodes",

@@ -22,6 +22,7 @@ import {
 import { motion } from "framer-motion";
 import { Skeleton } from "@/features/shared/components/ui/Skeleton";
 import { useToast } from "@/features/shared/components/ui/ToastProvider";
+import { useSystemDocuments } from "@/features/shared/hooks/useSystemDocuments";
 
 export type ConversationMode = 
   | "General"
@@ -105,6 +106,20 @@ function DecisionAssistantContent() {
     selectedGraphNode: searchParams.get("selectedGraphNode") || undefined,
   };
 
+  const { hasDocuments } = useSystemDocuments();
+
+  const prompts = hasDocuments ? [
+    "Is Pump P-204 safe to restart under SOP-MECH-042?",
+    "Explain the contradiction between SOP-MECH-042 and OEM Manual rev 3.",
+    "What are the LOTO requirements for valve V-101 and V-102?",
+    "What does OSHA 29 CFR 1910.147 mandate for this procedure?"
+  ] : [
+    "How do I ingest an industrial standard or SOP?",
+    "What capabilities does the 2D Knowledge Graph provide?",
+    "How does automated contradiction detection work?",
+    "What regulatory standards can be monitored (OSHA, API, ISO)?"
+  ];
+
   const {
     conversations,
     activeConversation,
@@ -163,19 +178,23 @@ function DecisionAssistantContent() {
               <Pin className="w-3.5 h-3.5" /> Pinned
             </h3>
             <div className="flex flex-col gap-1">
-              {conversations.filter(c => c.pinned).map(conv => (
-                <div 
-                  key={conv.id}
-                  onClick={() => selectConversation(conv.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
-                >
-                  <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">{conv.department}</span>
-                    <span className="text-[10px] text-slate-500">{new Date(conv.timestamp).toLocaleDateString('en-US', { timeZone: 'UTC' })}</span>
+              {conversations.filter(c => c.pinned).length > 0 ? (
+                conversations.filter(c => c.pinned).map(conv => (
+                  <div 
+                    key={conv.id}
+                    onClick={() => selectConversation(conv.id)}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
+                  >
+                    <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded">{conv.department}</span>
+                      <span className="text-[10px] text-slate-500">{new Date(conv.timestamp).toLocaleDateString('en-US', { timeZone: 'UTC' })}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-[11px] text-slate-500 py-1 italic">No pinned conversations</div>
+              )}
             </div>
           </div>
 
@@ -185,19 +204,23 @@ function DecisionAssistantContent() {
               <Clock className="w-3.5 h-3.5" /> Recent
             </h3>
             <div className="flex flex-col gap-1">
-              {conversations.filter(c => !c.pinned).map(conv => (
-                <div 
-                  key={conv.id}
-                  onClick={() => selectConversation(conv.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
-                >
-                  <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
-                  <div className="flex items-center justify-between mt-1">
-                    <span className="text-[10px] text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">{conv.department}</span>
-                    <span className="text-[10px] text-slate-500">{new Date(conv.timestamp).toLocaleDateString('en-US', { timeZone: 'UTC' })}</span>
+              {conversations.filter(c => !c.pinned).length > 0 ? (
+                conversations.filter(c => !c.pinned).map(conv => (
+                  <div 
+                    key={conv.id}
+                    onClick={() => selectConversation(conv.id)}
+                    className={`p-3 rounded-lg cursor-pointer transition-colors ${activeConversationId === conv.id ? 'bg-slate-800 border border-slate-700' : 'hover:bg-slate-800/50 border border-transparent'}`}
+                  >
+                    <div className="text-sm font-semibold text-slate-200 line-clamp-1">{conv.title}</div>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-[10px] text-blue-500 bg-blue-500/10 px-1.5 py-0.5 rounded">{conv.department}</span>
+                      <span className="text-[10px] text-slate-500">{new Date(conv.timestamp).toLocaleDateString('en-US', { timeZone: 'UTC' })}</span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className="text-[11px] text-slate-500 py-1 italic">No recent conversations</div>
+              )}
             </div>
           </div>
 
@@ -220,12 +243,15 @@ function DecisionAssistantContent() {
                 <SearchCode className="w-8 h-8 text-emerald-500" />
               </div>
               <h2 className={`text-2xl font-bold ${tokens.text.primary} mb-3`}>Industrial Knowledge Assistant</h2>
-              <p className={`text-sm ${tokens.text.secondary} mb-12 max-w-xl leading-relaxed`}>
-                Ask operational, maintenance, compliance and engineering questions. Answers are securely reasoned across your entire plant's knowledge graph, SOPs, and telemetry.
+              <p className={`text-sm ${tokens.text.secondary} mb-8 max-w-xl leading-relaxed`}>
+                {hasDocuments
+                  ? "Ask operational, maintenance, compliance, and engineering questions regarding Centrifugal Pump P-204 and SOP-MECH-042."
+                  : "Ask operational, maintenance, compliance, and engineering questions. Upload a document or SOP to unlock AI neuro-symbolic reasoning over your plant's knowledge graph."
+                }
               </p>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full text-left">
-                {ASSISTANT_PROMPTS.map((prompt, idx) => (
+                {prompts.map((prompt, idx) => (
                   <button 
                     key={idx}
                     onClick={() => handleSendMessage(prompt)}

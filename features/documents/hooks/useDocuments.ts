@@ -1,6 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { DocumentData } from "../../dashboard/constants/recentDocumentsData";
 import { documentService } from "../services/documentService";
+import { graphService } from "@/features/knowledge-graph/services/graphService";
 import { usePolling } from "../../../lib/hooks/usePolling";
 
 export function useDocuments() {
@@ -34,12 +35,44 @@ export function useDocuments() {
     setError(null);
     try {
       await documentService.uploadDocument(file);
+      graphService.clearCache();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("documentsUpdated"));
       await fetchDocuments(true); // silent refresh
     } catch (err) {
       console.error("Upload failed", err);
       throw err;
     } finally {
       setIsUploading(false);
+    }
+  }, [fetchDocuments]);
+
+  const deleteDocument = useCallback(async (id: string) => {
+    setIsLoading(true);
+    try {
+      await documentService.deleteDocument(id);
+      graphService.clearCache();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("documentsUpdated"));
+      await fetchDocuments(false);
+    } catch (err) {
+      console.error("Delete failed", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchDocuments]);
+
+  const clearAllDocuments = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      await documentService.clearAllDocuments();
+      graphService.clearCache();
+      if (typeof window !== "undefined") window.dispatchEvent(new Event("documentsUpdated"));
+      await fetchDocuments(false);
+    } catch (err) {
+      console.error("Clear all failed", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
     }
   }, [fetchDocuments]);
 
@@ -64,6 +97,8 @@ export function useDocuments() {
     isUploading,
     error,
     refresh: () => fetchDocuments(false),
-    uploadDocument
+    uploadDocument,
+    deleteDocument,
+    clearAllDocuments
   };
 }

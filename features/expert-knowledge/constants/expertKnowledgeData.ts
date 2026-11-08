@@ -96,6 +96,131 @@ export interface ExpertKnowledgeArticle {
 
 export const MOCK_KNOWLEDGE_ARTICLES: ExpertKnowledgeArticle[] = [
   {
+    id: "ek-sop-042",
+    title: "SOP-MECH-042 Mechanical Seal Warm-Up Bypass Clause",
+    category: "Mechanical",
+    sourceType: "Senior Engineer Experience",
+    maturity: "Validated",
+    experts: [
+      { name: "Robert Chen", role: "Principal Mechanical Engineer", department: "Mechanical Reliability", type: "Primary Expert" }
+    ],
+    knowledgeScore: 96,
+    confidence: 98,
+    aiConfidence: 96,
+    completeness: 94,
+    evidenceCoverage: 96,
+    usageFrequency: 142,
+    reviewFreshness: "Fresh",
+    knowledgeHealth: "Excellent",
+    executiveAiSummary: "Heuristic captured from SOP-MECH-042: Suction valve V-101 must not be locked 100% closed during seal warm-up flush to prevent thermal shock and dry-run damage on MS-204 cartridge seals.",
+    content: {
+      overview: "Standard operating procedure isolation nuance for centrifugal pump P-204.",
+      technicalDetails: "Flowserve mechanical seal MS-204 requires barrier fluid circulation at 15 psi differential prior to complete suction isolation.",
+      operationalContext: "Centrifugal pump P-204 unit 3 hydrocarbon processing.",
+      fieldTricks: ["Crack valve V-101 by 5% during initial 10-minute flush."],
+      failureSymptoms: ["Audible squeal from inboard seal face during cold startup."],
+      commonMistakes: ["Applying full LOTO isolation before seal chamber pressure drops to ambient."],
+      lessonsLearned: ["Dry-running the seal for more than 45 seconds causes immediate micro-fracturing of carbon faces."],
+      knownLimitations: ["Applies only to Durco Mark 3 pumps with API Plan 53A seal pots."]
+    },
+    impact: {
+      safety: "High",
+      operational: "High",
+      reliability: "High",
+      maintenance: "Medium",
+      production: "High",
+      environmental: "Medium",
+      description: "Prevents hazardous hydrocarbon leaks and catastrophic seal blowouts during pump isolation."
+    },
+    knowledgeGaps: [],
+    aiInsights: ["AI cross-referenced Flowserve OEM manual and flagged discrepancy in SOP-MECH-042."],
+    applicableAssets: [
+      { id: "ast-p204", tag: "P-204", name: "Centrifugal Pump P-204" }
+    ],
+    supportingEvidence: [
+      { id: "ev-1", title: "SOP-MECH-042 Revision 3.2", type: "SOP", relevanceScore: 98 }
+    ],
+    timeline: [
+      { id: "tl-1", date: "2026-11-07", type: "Validated", description: "Extracted from SOP-MECH-042 during document processing." }
+    ],
+    versions: [
+      { versionNumber: 1, date: "2026-11-07", whatChanged: "Initial extraction", whyChanged: "Document ingested", approvedBy: "Reliability Lead", affectedAssets: ["P-204"] }
+    ],
+    reuseMetrics: {
+      referencedByDecisionAssistant: 34,
+      referencedByAiBriefs: 12,
+      referencedByCompliance: 8,
+      referencedByMaintenancePlans: 15,
+      referencedBySopUpdates: 3,
+      referencedByPreviousQueries: 28
+    },
+    lastUpdated: "2026-11-07",
+    tags: ["P-204", "SOP-MECH-042", "Mechanical-Seal", "LOTO"]
+  },
+  {
+    id: "ek-inc-2023-09",
+    title: "Incident INC-2023-09: Premature Valve Bleed Prevention Heuristic",
+    category: "Safety",
+    sourceType: "Incident Investigation",
+    maturity: "Operational",
+    experts: [
+      { name: "Alice Fernandez", role: "Lead Safety Auditor", department: "HSE", type: "Primary Expert" }
+    ],
+    knowledgeScore: 92,
+    confidence: 95,
+    aiConfidence: 94,
+    completeness: 90,
+    evidenceCoverage: 92,
+    usageFrequency: 84,
+    reviewFreshness: "Fresh",
+    knowledgeHealth: "Good",
+    executiveAiSummary: "Root cause heuristic from Incident INC-2023-09: Premature opening of discharge valve V-102 before line pressure bleed caused back-pressure surge and flange distortion.",
+    content: {
+      overview: "Safety investigation findings on centrifugal pump P-204 discharge header.",
+      technicalDetails: "Residual pressure in discharge line exceeded 280 psi when technician cracked V-102 bleed cock.",
+      operationalContext: "High-pressure hydrocarbon service in Unit 3.",
+      fieldTricks: ["Always verify double-block bleed gauge reads 0 psi before touching bleed cock."],
+      failureSymptoms: ["Sudden gauge flutter or hiss from packing gland."],
+      commonMistakes: ["Relying on upstream valve handle position rather than pressure gauge verification."],
+      lessonsLearned: ["Never crack bleed valves without full PPE and verifying zero energy state."],
+      knownLimitations: ["Mandatory for all 300# and 600# class lines."]
+    },
+    impact: {
+      safety: "High",
+      operational: "Medium",
+      reliability: "High",
+      maintenance: "Low",
+      production: "Medium",
+      environmental: "Low",
+      description: "Prevents high-pressure gas release and maintenance personnel injury."
+    },
+    knowledgeGaps: [],
+    aiInsights: ["Referenced directly in SOP-MECH-042 section 4 as historical incident precedent."],
+    applicableAssets: [
+      { id: "ast-p204", tag: "P-204", name: "Centrifugal Pump P-204" },
+      { id: "ast-v102", tag: "V-102", name: "Discharge Valve V-102" }
+    ],
+    supportingEvidence: [
+      { id: "ev-2", title: "Incident Report INC-2023-09", type: "Document", relevanceScore: 96 }
+    ],
+    timeline: [
+      { id: "tl-2", date: "2026-11-07", type: "Created", description: "Extracted from historical incident citation in SOP-MECH-042." }
+    ],
+    versions: [
+      { versionNumber: 1, date: "2026-11-07", whatChanged: "Initial creation", whyChanged: "Document ingested", approvedBy: "HSE Lead", affectedAssets: ["P-204", "V-102"] }
+    ],
+    reuseMetrics: {
+      referencedByDecisionAssistant: 18,
+      referencedByAiBriefs: 6,
+      referencedByCompliance: 4,
+      referencedByMaintenancePlans: 8,
+      referencedBySopUpdates: 2,
+      referencedByPreviousQueries: 14
+    },
+    lastUpdated: "2026-11-07",
+    tags: ["INC-2023-09", "Safety", "Bleed-Verification", "V-102"]
+  },
+  {
     id: "ek-001",
     title: "Durco Mark 3 Cold-Start Vibration Heuristics",
     category: "Mechanical",
@@ -323,12 +448,12 @@ export const MOCK_KNOWLEDGE_ARTICLES: ExpertKnowledgeArticle[] = [
 ];
 
 export const EXPERT_KNOWLEDGE_STATS = {
-  totalArticles: 148,
-  validated: 112,
-  pendingReview: 18,
-  criticalBestPractices: 45,
-  lessonsLearned: 67,
-  aiGeneratedInsights: 31,
-  contributors: 42,
-  knowledgeHealth: 88
+  totalArticles: 0,
+  validated: 0,
+  pendingReview: 0,
+  criticalBestPractices: 0,
+  lessonsLearned: 0,
+  aiGeneratedInsights: 0,
+  contributors: 0,
+  knowledgeHealth: 0
 };

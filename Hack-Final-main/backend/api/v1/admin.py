@@ -67,3 +67,21 @@ async def get_recent_audit_logs(
             total_pages=1,
         )
     )
+
+
+@router.post("/reset", response_model=ResponseEnvelope)
+async def reset_demo_state(
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+):
+    """Cleanly reset documents, pipeline results, audit logs and graph store back to ZERO."""
+    from sqlalchemy import text
+    from backend.graph.graph_builder import graph_builder
+    await db.execute(text("DELETE FROM pipeline_results;"))
+    await db.execute(text("DELETE FROM audit_logs;"))
+    await db.execute(text("DELETE FROM notifications;"))
+    await db.execute(text("DELETE FROM reports;"))
+    await db.execute(text("DELETE FROM documents;"))
+    await db.commit()
+    graph_builder.mock_graph_store = {"nodes": {}, "relationships": []}
+    return ResponseEnvelope(message="System state cleanly reset to ZERO documents and empty graph.")

@@ -11,7 +11,7 @@ export const graphService = {
    * Fetches the complete Knowledge Graph (Nodes, Edges, Stats) concurrently
    * and delegates to the adapter. Implements an in-memory cache to prevent redundant fetches.
    */
-  async fetchGraph(forceRefresh = false, signal?: AbortSignal): Promise<KgData> {
+  async fetchGraph(forceRefresh = true, signal?: AbortSignal): Promise<KgData> {
     if (!forceRefresh && cachedGraphData) {
       return cachedGraphData;
     }

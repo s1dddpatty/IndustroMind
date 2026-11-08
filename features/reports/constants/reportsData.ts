@@ -65,7 +65,7 @@ export interface IntelligenceReport {
   reportType: "Daily Operations Summary" | "Maintenance Summary" | "Compliance Status Report" | "Safety Performance Report" | "Asset Health Report" | "Inspection Summary" | "Knowledge Gap Report" | "Cross-functional Intelligence Report";
   category: "Executive" | "Maintenance" | "Compliance" | "Safety" | "Operations" | "Asset" | "Knowledge";
   status: "Draft" | "Pending Approval" | "Published" | "Archived" | "queued" | "processing" | "completed" | "failed" | "cancelled" | "expired";
-  
+
   generatedBy: string;
   generatedAt: string;
   timeRange: "Last 24 Hours" | "Last 7 Days" | "Last 30 Days" | "YTD" | "Custom";
@@ -100,7 +100,7 @@ export interface IntelligenceReport {
   complianceImpact?: string;
   knowledgeImpact?: string;
   suggestedActionsList?: string[];
-  
+
   // Future capabilities
   scheduled?: boolean;
   recurring?: boolean;
@@ -236,9 +236,9 @@ export const MOCK_INTELLIGENCE_REPORTS: IntelligenceReport[] = [
 ];
 
 export const REPORT_STATS = {
-  generatedToday: 12,
-  scheduledReports: 45,
-  pendingApproval: 3,
-  criticalReports: 1,
-  aiGeneratedBriefs: 28
+  generatedToday: 0,
+  scheduledReports: 0,
+  pendingApproval: 0,
+  criticalReports: 0,
+  aiGeneratedBriefs: 0
 };

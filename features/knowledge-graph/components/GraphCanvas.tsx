@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { useTheme } from '@/hooks/useTheme';
 import { DESIGN_TOKENS } from '@/constants/design';
 import { KgNode, KgEdge } from '../constants/graphData';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Network } from 'lucide-react';
 
 // @ts-ignore
 const ForceGraph2D: any = dynamic(() => import('react-force-graph-2d'), { 
@@ -247,6 +247,14 @@ export function GraphCanvas({ nodes, edges, searchQuery, selectedNodeId, onSelec
       ) : (
         <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm">
           Loading graph engine...
+        </div>
+      )}
+
+      {nodes.length === 0 && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none z-10 text-slate-500 bg-slate-950/40 backdrop-blur-[2px]">
+          <Network className="w-12 h-12 mb-3 opacity-40 text-emerald-500" />
+          <p className="text-base font-semibold text-slate-300">Knowledge Graph Empty</p>
+          <p className="text-xs text-slate-500 mt-1 max-w-sm text-center">Upload an SOP or compliance PDF to extract industrial entities and build the 2D interactive ontology.</p>
         </div>
       )}
     </div>

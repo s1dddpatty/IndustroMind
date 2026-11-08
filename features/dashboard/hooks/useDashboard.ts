@@ -23,6 +23,13 @@ export function useDashboard() {
 
   useEffect(() => {
     fetchDashboardData();
+    const handleUpdate = () => {
+      fetchDashboardData();
+    };
+    window.addEventListener("documentsUpdated", handleUpdate);
+    return () => {
+      window.removeEventListener("documentsUpdated", handleUpdate);
+    };
   }, [fetchDashboardData]);
 
   return {

@@ -18,6 +18,20 @@ export interface AlertData {
 
 export const DASHBOARD_ALERTS: AlertData[] = [
   {
+    id: 101,
+    title: "Contradiction: SOP-MECH-042 vs OEM Manual",
+    severity: "Critical",
+    description: "SOP-MECH-042 requires isolation valve V-101 to be locked out before venting, but OEM manual rev 3 states V-101 must remain cracked open 5% during seal warm-up.",
+    asset: "Centrifugal Pump P-204",
+    timestamp: "Just now",
+    status: "Active",
+    recommendedAction: "Review SOP-MECH-042 section 3 and introduce an explicit bypass clause for initial thermal flush of cartridge seal MS-204.",
+    relatedDocuments: [
+      { id: "SOP-MECH-042", title: "SOP-MECH-042 Revision 3.2", type: "Standard Operating Procedure" },
+      { id: "DOC-OEM-FLOWSERVE", title: "Flowserve Durco Mark 3 OEM Manual", type: "OEM Specification" }
+    ]
+  },
+  {
     id: 1,
     title: "SOP Conflict Detected",
     severity: "Critical",

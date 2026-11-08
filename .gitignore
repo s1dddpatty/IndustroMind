@@ -9,3 +9,22 @@ npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
 tsconfig.tsbuildinfo
+
+# Python & Virtual Environments
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Local Databases
+*.db
+*.db-journal
+neuroplant.db
+neuroplant.db-journal
+
+# Runtime Uploads & Scratch
+data/uploads/
+Hack-Final-main/data/uploads/
+Hack-Final-main/scratch/
+scratch/
+

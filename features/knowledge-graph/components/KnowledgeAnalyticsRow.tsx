@@ -17,10 +17,18 @@ export function KnowledgeAnalyticsRow({ analytics }: KnowledgeAnalyticsRowProps)
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
 
+  const formatCount = (count: number) => {
+    if (!count) return "0";
+    if (count >= 1000) return `${(count / 1000).toFixed(1)}k`;
+    return count.toString();
+  };
+
+  const isZero = analytics.totalNodes === 0;
+
   const metrics = [
     {
       label: "Knowledge Integrity",
-      value: `${analytics.knowledgeIntegrity}%`,
+      value: isZero ? "0%" : `${analytics.knowledgeIntegrity}%`,
       icon: ShieldCheck,
       color: "text-emerald-500",
       bg: "bg-emerald-500/10",
@@ -28,7 +36,7 @@ export function KnowledgeAnalyticsRow({ analytics }: KnowledgeAnalyticsRowProps)
     },
     {
       label: "Coverage vs Assets",
-      value: `${analytics.knowledgeCoverage}%`,
+      value: isZero ? "0%" : `${analytics.knowledgeCoverage}%`,
       icon: Server,
       color: "text-blue-500",
       bg: "bg-blue-500/10",
@@ -36,7 +44,7 @@ export function KnowledgeAnalyticsRow({ analytics }: KnowledgeAnalyticsRowProps)
     },
     {
       label: "Total Entities & Edges",
-      value: `${(analytics.totalNodes / 1000).toFixed(1)}k / ${(analytics.totalRelationships / 1000).toFixed(1)}k`,
+      value: `${formatCount(analytics.totalNodes)} / ${formatCount(analytics.totalRelationships)}`,
       icon: GitMerge,
       color: "text-purple-500",
       bg: "bg-purple-500/10",
@@ -44,7 +52,7 @@ export function KnowledgeAnalyticsRow({ analytics }: KnowledgeAnalyticsRowProps)
     },
     {
       label: "Missing / Orphans",
-      value: `${analytics.missingRelationships} / ${analytics.orphanNodes}`,
+      value: isZero ? "0 / 0" : `${analytics.missingRelationships} / ${analytics.orphanNodes}`,
       icon: LinkIcon,
       color: "text-amber-500",
       bg: "bg-amber-500/10",
@@ -52,35 +60,43 @@ export function KnowledgeAnalyticsRow({ analytics }: KnowledgeAnalyticsRowProps)
     },
     {
       label: "Active Contradictions",
-      value: analytics.contradictionsDetected,
+      value: isZero ? "0" : analytics.contradictionsDetected,
       icon: AlertTriangle,
       color: "text-red-500",
       bg: "bg-red-500/10",
       border: "border-red-500/20"
     },
     {
-      label: "AI Suggestions",
-      value: analytics.aiSuggestedImprovements,
+      label: "Drift Status",
+      value: isZero ? "Idle" : "Monitored",
       icon: Lightbulb,
-      color: "text-cyan-500",
-      bg: "bg-cyan-500/10",
-      border: "border-cyan-500/20"
+      color: "text-amber-400",
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/20"
     }
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-      {metrics.map((metric, i) => (
-        <div key={i} className={`p-4 rounded-xl border ${tokens.card.border} bg-slate-900/40 flex flex-col`}>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{metric.label}</span>
-            <div className={`w-8 h-8 rounded-lg ${metric.bg} ${metric.border} border flex items-center justify-center shrink-0`}>
-              <metric.icon className={`w-4 h-4 ${metric.color}`} />
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
+      {metrics.map((m, idx) => {
+        const Icon = m.icon;
+        return (
+          <div 
+            key={idx}
+            className={`p-3 rounded-xl border ${tokens.card.border} ${tokens.card.background} flex flex-col justify-between`}
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] text-slate-400 font-medium truncate">{m.label}</span>
+              <div className={`p-1 rounded-md ${m.bg} ${m.border} border`}>
+                <Icon className={`w-3.5 h-3.5 ${m.color}`} />
+              </div>
             </div>
+            <span className={`text-base font-bold ${tokens.text.primary}`}>
+              {m.value}
+            </span>
           </div>
-          <div className="text-2xl font-bold text-white mt-auto">{metric.value}</div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

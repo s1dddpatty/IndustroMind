@@ -83,7 +83,159 @@ export interface Asset {
   tags: string[];
 }
 
+export const INGESTED_ASSETS: Asset[] = [
+  {
+    id: "ast-p204",
+    assetTag: "P-204",
+    assetName: "Centrifugal Pump P-204",
+    assetType: "Rotary",
+    manufacturer: "Flowserve Industrial",
+    model: "Durco Mark 3 ISO 13709",
+    location: "Unit 3 - Hydrocarbon Processing",
+    department: "Mechanical Reliability",
+    criticality: "Critical",
+    status: "Critical",
+    healthScore: 68,
+    riskScore: 78,
+    failureProbability: 38,
+    remainingUsefulLife: "8 months",
+    operationalState: "Running",
+    installationDate: "2021-04-12",
+    commissionDate: "2021-05-01",
+    lastInspection: "2026-10-15",
+    nextInspection: "2026-11-20",
+    lastMaintenance: "2026-08-10",
+    nextMaintenance: "2026-11-25",
+    executiveAiSummary: "Centrifugal Pump P-204 operating at 400 psi in Unit 3. Flagged with a critical contradiction between SOP-MECH-042 LOTO isolation and OEM seal flush requirements.",
+    aiRecommendations: [
+      { id: "rec-1", action: "Review LOTO clause with reliability supervisor", reason: "Suction valve lockout contradicts OEM mechanical seal flush specification.", timeframe: "Immediate", priority: "High" }
+    ],
+    knowledgeCoverage: {
+      sopsLinked: true,
+      datasheetLinked: true,
+      inspectionReportsAvailable: true,
+      maintenanceHistoryAvailable: true,
+      complianceMapped: true,
+      sparePartsDocumentationMissing: false,
+      replacementHistoryIncomplete: false,
+      calibrationEvidenceUnavailable: false,
+      overallScore: 92
+    },
+    compliance: [
+      { id: "comp-1", regulation: "OSHA 29 CFR 1910.147", description: "LOTO Lockout / Tagout isolation requirements", status: "Non-Compliant", lastChecked: "2026-11-07", impactLevel: "High" },
+      { id: "comp-2", regulation: "API 610 12th Ed.", description: "Centrifugal pumps for petroleum and gas industries", status: "Compliant", lastChecked: "2026-11-07", impactLevel: "Medium" }
+    ],
+    relatedKnowledge: [
+      { id: "kn-1", title: "SOP-MECH-042 Revision 3.2", type: "SOP", relevanceScore: 98, date: "2026-11-01" },
+      { id: "kn-2", title: "Incident INC-2023-09 Record", type: "Document", relevanceScore: 94, date: "2023-09-14" }
+    ],
+    maintenanceTimeline: [
+      { id: "tl-1", date: "2026-11-07", type: "Alert", title: "Contradiction Flagged", description: "AI detected conflict between SOP-MECH-042 and OEM Manual rev 3.", status: "Critical" },
+      { id: "tl-2", date: "2026-10-15", type: "Inspection", title: "Quarterly Vibration Baseline", description: "Seal MS-204 baseline verified.", status: "Completed" }
+    ],
+    owner: "Process Safety Team",
+    tags: ["Unit-3", "P-204", "LOTO-contradiction"]
+  },
+  {
+    id: "ast-v101",
+    assetTag: "V-101",
+    assetName: "Suction Isolation Valve V-101",
+    assetType: "Static",
+    manufacturer: "Fisher Controls",
+    model: "High-Pressure Isolation Globe",
+    location: "Unit 3 - Hydrocarbon Processing",
+    department: "Operations",
+    criticality: "High",
+    status: "Warning",
+    healthScore: 82,
+    riskScore: 42,
+    failureProbability: 14,
+    remainingUsefulLife: "3.5 years",
+    operationalState: "Running",
+    installationDate: "2020-08-10",
+    commissionDate: "2020-09-01",
+    lastInspection: "2026-09-22",
+    nextInspection: "2027-03-22",
+    lastMaintenance: "2026-04-15",
+    nextMaintenance: "2027-04-15",
+    executiveAiSummary: "Suction valve for Pump P-204. Involved in lockout sequence contradiction during warm-up bypass phase.",
+    aiRecommendations: [
+      { id: "rec-2", action: "Clarify bypass lock status", reason: "Must not be locked 100% closed during warm-up flush.", timeframe: "Next Shift", priority: "Medium" }
+    ],
+    knowledgeCoverage: {
+      sopsLinked: true,
+      datasheetLinked: true,
+      inspectionReportsAvailable: true,
+      maintenanceHistoryAvailable: true,
+      complianceMapped: true,
+      sparePartsDocumentationMissing: false,
+      replacementHistoryIncomplete: false,
+      calibrationEvidenceUnavailable: false,
+      overallScore: 88
+    },
+    compliance: [
+      { id: "comp-1", regulation: "OSHA 29 CFR 1910.147", description: "Suction valve energy isolation", status: "Pending Review", lastChecked: "2026-11-07", impactLevel: "High" }
+    ],
+    relatedKnowledge: [
+      { id: "kn-1", title: "SOP-MECH-042", type: "SOP", relevanceScore: 96 }
+    ],
+    maintenanceTimeline: [
+      { id: "tl-3", date: "2026-11-07", type: "AI Recommendation", title: "Lockout Sequence Verification", description: "Tagged in SOP-MECH-042 contradiction.", status: "Pending" }
+    ],
+    owner: "Operations",
+    tags: ["valve", "suction", "V-101"]
+  },
+  {
+    id: "ast-v102",
+    assetTag: "V-102",
+    assetName: "Discharge Isolation Valve V-102",
+    assetType: "Static",
+    manufacturer: "Cameron Valves",
+    model: "Flanged Check & Bleed Valve",
+    location: "Unit 3 - Hydrocarbon Processing",
+    department: "Operations",
+    criticality: "Medium",
+    status: "Healthy",
+    healthScore: 94,
+    riskScore: 12,
+    failureProbability: 4,
+    remainingUsefulLife: "5 years",
+    operationalState: "Running",
+    installationDate: "2020-08-10",
+    commissionDate: "2020-09-01",
+    lastInspection: "2026-09-22",
+    nextInspection: "2027-03-22",
+    lastMaintenance: "2026-04-15",
+    nextMaintenance: "2027-04-15",
+    executiveAiSummary: "Discharge valve connected to Pump P-204. Full mechanical integrity verified under API 610.",
+    aiRecommendations: [],
+    knowledgeCoverage: {
+      sopsLinked: true,
+      datasheetLinked: true,
+      inspectionReportsAvailable: true,
+      maintenanceHistoryAvailable: true,
+      complianceMapped: true,
+      sparePartsDocumentationMissing: false,
+      replacementHistoryIncomplete: false,
+      calibrationEvidenceUnavailable: false,
+      overallScore: 95
+    },
+    compliance: [
+      { id: "comp-2", regulation: "API 610", description: "Discharge pressure containment", status: "Compliant", lastChecked: "2026-11-07", impactLevel: "Low" }
+    ],
+    relatedKnowledge: [
+      { id: "kn-1", title: "SOP-MECH-042", type: "SOP", relevanceScore: 92 }
+    ],
+    maintenanceTimeline: [
+      { id: "tl-4", date: "2026-09-22", type: "Inspection", title: "Hydrostatic Shell Test", description: "Passed pressure test at 600 psi.", status: "Completed" }
+    ],
+    owner: "Operations",
+    tags: ["valve", "discharge", "V-102"]
+  }
+];
+
 export const MOCK_ASSETS: Asset[] = [
+  ...INGESTED_ASSETS,
   {
     id: "asset-001",
     assetTag: "P-201",
@@ -422,12 +574,12 @@ export const MOCK_ASSETS: Asset[] = [
 ];
 
 export const ASSET_STATS = {
-  total: 412,
-  critical: 45,
-  healthy: 320,
-  inMaintenance: 12,
-  highRisk: 8,
-  aiRecommendations: 24,
-  avgHealth: 88,
-  knowledgeCoverageAvg: 76
+  total: 0,
+  critical: 0,
+  healthy: 0,
+  inMaintenance: 0,
+  highRisk: 0,
+  aiRecommendations: 0,
+  avgHealth: 0,
+  knowledgeCoverageAvg: 0
 };

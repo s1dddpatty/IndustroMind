@@ -37,7 +37,10 @@ export function ReportDetailWorkspace({ reportId, reports, onBack }: ReportDetai
           </button>
           <span className={`text-sm font-medium ${tokens.text.secondary}`}>Back to Executive Reports</span>
         </div>
-        <button className={`px-4 py-2 rounded-xl bg-slate-800 border ${tokens.card.border} text-sm font-medium text-white hover:bg-slate-700 transition-colors flex items-center gap-2`}>
+        <button 
+          onClick={() => window.print()}
+          className={`px-4 py-2 rounded-xl bg-slate-800 border ${tokens.card.border} text-sm font-medium text-white hover:bg-slate-700 transition-colors flex items-center gap-2 cursor-pointer`}
+        >
           <Download className="w-4 h-4 text-slate-400" />
           Export PDF
         </button>

@@ -79,92 +79,105 @@ export const DASHBOARD_DATA: DashboardData = {
     {
       id: "kpi-1",
       title: "Knowledge Integrity",
-      value: "92%",
+      value: "0%",
       iconName: "ShieldCheck",
       color: "green",
       trend: {
-        value: "8%",
+        value: "0%",
         direction: "up",
-        text: "vs last 7 days",
+        text: "Awaiting documents",
       },
-      sparklineData: [10, 15, 12, 18, 24, 20, 30],
+      sparklineData: [0, 0, 0, 0, 0],
     },
     {
       id: "kpi-2",
       title: "Active Contradictions",
-      value: "3",
+      value: "0",
       iconName: "TriangleAlert",
       color: "red",
       trend: {
-        value: "2",
+        value: "0",
         direction: "down",
-        text: "vs last 7 days",
+        text: "No contradictions",
       },
-      sparklineData: [5, 4, 4, 3, 3, 2, 1],
+      sparklineData: [0, 0, 0, 0, 0],
     },
     {
       id: "kpi-3",
       title: "SOPs Non-Compliant",
-      value: "7",
+      value: "0",
       iconName: "FileWarning",
       color: "orange",
       trend: {
-        value: "3",
-        direction: "up",
-        text: "vs last 7 days",
+        value: "0",
+        direction: "down",
+        text: "All SOPs compliant",
       },
-      sparklineData: [2, 2, 3, 4, 4, 5, 7],
+      sparklineData: [0, 0, 0, 0, 0],
     },
     {
       id: "kpi-4",
       title: "Knowledge Mortality",
-      value: "34%",
+      value: "0%",
       iconName: "Activity",
       color: "purple",
       trend: {
-        value: "6%",
+        value: "0%",
         direction: "down",
-        text: "vs last 7 days",
+        text: "No risk detected",
         colorOverride: "green",
       },
-      sparklineData: [40, 38, 38, 36, 35, 34, 34],
+      sparklineData: [0, 0, 0, 0, 0],
     },
     {
       id: "kpi-5",
       title: "Documents Processed",
-      value: "247",
+      value: "0",
       iconName: "FileText",
       color: "blue",
       trend: {
-        value: "24",
+        value: "0",
         direction: "up",
-        text: "vs last 7 days",
+        text: "Upload to begin",
       },
-      sparklineData: [200, 210, 215, 220, 230, 235, 247],
+      sparklineData: [0, 0, 0, 0, 0],
     },
   ],
   workspace: {
     proactiveAlerts: {
       title: "Proactive Alerts",
-      criticalCount: 3,
-      alerts: DASHBOARD_ALERTS,
+      criticalCount: 0,
+      alerts: [],
     },
     knowledgeGraph: {
       title: "Knowledge Graph Overview",
     },
     aiDecisionBrief: {
       title: "AI Decision Brief",
-      currentBrief: MOCK_AI_BRIEFS[0]
+      currentBrief: {
+        id: "brief-init",
+        title: "Awaiting Document Analysis",
+        timestamp: "Just now",
+        status: "Informational",
+        executiveSummary: "No industrial documents analyzed yet. Upload an SOP or standard to trigger AI reasoning.",
+        recommendation: "Upload a compliance PDF to generate operational decision briefs.",
+        actionItems: [],
+        keyFindings: [],
+        confidence: 0,
+        tags: ["Pending Upload"],
+        category: "Operational",
+        metrics: []
+      } as any
     },
   },
   bottomRow: {
     recentDocuments: {
       title: "Recent Documents",
-      documents: MOCK_DOCUMENTS
+      documents: []
     },
     recentQueries: {
       title: "Recent Queries",
-      queries: MOCK_RECENT_QUERIES
+      queries: []
     },
     systemHealth: {
       title: "System Health",

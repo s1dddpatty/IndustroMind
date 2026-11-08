@@ -449,12 +449,12 @@ export const MOCK_COMPLIANCE_RULES: ComplianceRule[] = [
 ];
 
 export const COMPLIANCE_STATS = {
-  overallScore: 79,
-  compliantRequirements: 142,
-  openViolations: 18,
-  criticalViolations: 3,
-  auditsDue: 5,
-  inspectionsPending: 12,
-  aiRecommendations: 24,
-  knowledgeCoverage: 84
+  overallScore: 0,
+  compliantRequirements: 0,
+  openViolations: 0,
+  criticalViolations: 0,
+  auditsDue: 0,
+  inspectionsPending: 0,
+  aiRecommendations: 0,
+  knowledgeCoverage: 0
 };

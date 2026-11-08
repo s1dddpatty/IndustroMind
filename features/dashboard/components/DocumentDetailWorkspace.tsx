@@ -7,13 +7,14 @@ import { DocumentData } from "../constants/recentDocumentsData";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, FileText, Download, Share2, ExternalLink, 
-  Clock, ShieldCheck, Sparkles, Tag, GitCommit, Link as LinkIcon, AlertTriangle
+  Clock, ShieldCheck, Sparkles, Tag, GitCommit, Link as LinkIcon, AlertTriangle, Trash2
 } from "lucide-react";
 
 interface DocumentDetailWorkspaceProps {
   documentId: string;
   documents: DocumentData[];
   onBack: () => void;
+  onDelete?: (id: string) => void;
 }
 
 const formatDate = (isoString: string) => {
@@ -21,7 +22,7 @@ const formatDate = (isoString: string) => {
   return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" });
 };
 
-export function DocumentDetailWorkspace({ documentId, documents, onBack }: DocumentDetailWorkspaceProps) {
+export function DocumentDetailWorkspace({ documentId, documents, onBack, onDelete }: DocumentDetailWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
@@ -67,9 +68,18 @@ export function DocumentDetailWorkspace({ documentId, documents, onBack }: Docum
         </div>
         
         <div className="flex items-center gap-3">
-          <button className={`px-4 py-2 rounded-lg border ${tokens.card.border} text-slate-300 hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-sm font-medium`}>
-            <Share2 className="w-4 h-4" /> Share
-          </button>
+          {onDelete && (
+            <button 
+              onClick={() => {
+                if (confirm(`Are you sure you want to delete "${doc.fileName}"? This will also remove its Knowledge Graph entities.`)) {
+                  onDelete(doc.id);
+                }
+              }}
+              className="px-3.5 py-2 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 hover:bg-red-500 hover:text-white transition-colors flex items-center gap-2 text-sm font-medium cursor-pointer"
+            >
+              <Trash2 className="w-4 h-4" /> Delete Document
+            </button>
+          )}
           <button className={`px-4 py-2 rounded-lg border ${tokens.card.border} text-slate-300 hover:bg-slate-800/50 transition-colors flex items-center gap-2 text-sm font-medium`}>
             <Download className="w-4 h-4" /> Download
           </button>

@@ -18,8 +18,10 @@ import {
   RequiredHumanDecisionsSection
 } from "./AiBriefSections";
 
-const formatDate = (isoString: string) => {
+const formatDate = (isoString?: string) => {
+  if (!isoString) return "Just now";
   const d = new Date(isoString);
+  if (isNaN(d.getTime())) return "Just now";
   return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false });
 };
 

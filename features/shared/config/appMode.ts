@@ -6,7 +6,7 @@
  */
 export type AppMode = "AUTO" | "LIVE" | "DEMO";
 
-// Hardcoded for this build per requirements. Can be mapped to process.env in the future.
+// Set to LIVE to connect directly to the running FastAPI backend
 export const APP_MODE: AppMode = "LIVE";
 
 /**

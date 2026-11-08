@@ -22,24 +22,11 @@ class GraphAdapter:
 
     def get_nodes(self, org_id: Optional[str] = None, type_filter: Optional[str] = None) -> List[Dict[str, Any]]:
         """Retrieve graph nodes, optionally filtered by org and type."""
-        nodes_dict = graph_builder.mock_graph_store.get("nodes", {})
-        nodes = list(nodes_dict.values())
-        filtered = nodes
-        if org_id:
-            filtered = [n for n in filtered if n.get("org_id") == org_id]
-        if type_filter:
-            filtered = [n for n in filtered if n.get("type") == type_filter]
-        return filtered
+        return graph_builder.get_nodes(org_id, type_filter)
 
     def get_relationships(self, org_id: Optional[str] = None, rel_type: Optional[str] = None) -> List[Dict[str, Any]]:
         """Retrieve graph relationships, optionally filtered by org and type."""
-        rels = graph_builder.mock_graph_store.get("relationships", [])
-        filtered = rels
-        if org_id:
-            filtered = [r for r in filtered if r.get("org_id") == org_id]
-        if rel_type:
-            filtered = [r for r in filtered if r.get("relationship_type") == rel_type]
-        return filtered
+        return graph_builder.get_relationships(org_id, rel_type)
 
     def get_stats(self, org_id: Optional[str] = None) -> Dict[str, Any]:
         """Get graph statistics: node count by type, relationship count by type."""

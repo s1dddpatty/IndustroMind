@@ -66,6 +66,7 @@ from backend.api.v1.decisions import router as decisions_router
 from backend.api.v1.dashboard import router as dashboard_router
 from backend.api.v1.mortality import router as mortality_router
 from backend.api.v1.expert import router as expert_router
+from backend.api.v1.assets import router as assets_router
 
 # Register all routers under /api/v1
 api_prefix = settings.API_PREFIX
@@ -86,6 +87,7 @@ app.include_router(decisions_router, prefix=api_prefix)
 app.include_router(dashboard_router, prefix=api_prefix)
 app.include_router(mortality_router, prefix=api_prefix)
 app.include_router(expert_router, prefix=api_prefix)
+app.include_router(assets_router, prefix=api_prefix)
 
 
 @app.get("/health", tags=["Health"])

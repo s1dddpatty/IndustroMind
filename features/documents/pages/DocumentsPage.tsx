@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { DocumentsWorkspace } from "@/features/dashboard/components/DocumentsWorkspace";
@@ -18,7 +18,7 @@ export function DocumentsPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   
-  const { documents, isLoading, isUploading, uploadDocument } = useDocuments();
+  const { documents, isLoading, isUploading, uploadDocument, deleteDocument, clearAllDocuments, refresh } = useDocuments();
   
   const [view, setView] = useState<DocumentView>("list");
   const [selectedDocumentId, setSelectedDocumentId] = useState<string | null>(null);
@@ -29,6 +29,53 @@ export function DocumentsPage() {
       setView("upload");
     }
   }, [searchParams]);
+
+  const handleUploadFile = useCallback(async (file: File) => {
+    await uploadDocument(file);
+  }, [uploadDocument]);
+
+  const handleDeleteDocument = useCallback(async (id: string) => {
+    try {
+      toast("info", "Deleting document and updating Knowledge Graph...");
+      await deleteDocument(id);
+      toast("success", "Document deleted successfully!");
+      if (view === "detail") setView("list");
+    } catch (e: any) {
+      toast("error", e.message || "Failed to delete document");
+    }
+  }, [deleteDocument, toast, view]);
+
+  const handleClearAll = useCallback(async () => {
+    if (!confirm("Are you sure you want to delete ALL documents? This will completely wipe the Knowledge Graph.")) {
+      return;
+    }
+    try {
+      toast("info", "Clearing all documents and Knowledge Graph...");
+      await clearAllDocuments();
+      toast("success", "All documents and Knowledge Graph cleared!");
+      setView("list");
+    } catch (e: any) {
+      toast("error", e.message || "Failed to clear documents");
+    }
+  }, [clearAllDocuments, toast]);
+
+  const handleComplete = useCallback(async () => {
+    await refresh();
+    toast("success", "Document processed & indexed into Knowledge Graph!");
+    setView("list");
+    setPendingUploadFile(null);
+    router.replace("/demo/documents");
+  }, [refresh, toast, router]);
+
+  const handleCancel = useCallback(() => {
+    setPendingUploadFile(null);
+    if (searchParams.get("action") === "upload") {
+      router.replace("/demo");
+    } else {
+      setView("list");
+      router.replace("/demo/documents");
+    }
+  }, [router, searchParams]);
 
   return (
     <div className="flex-1 min-h-0 w-full relative flex flex-col">
@@ -82,12 +129,9 @@ export function DocumentsPage() {
               onUpload={(file) => {
                 setPendingUploadFile(file);
                 setView("upload");
-                // The actual upload will be triggered by DocumentUploadExperience or here.
-                // We'll trigger it concurrently so the UI animation runs while backend processes.
-                uploadDocument(file).catch(err => {
-                  console.error("Upload failed in page", err);
-                });
               }}
+              onDeleteDocument={handleDeleteDocument}
+              onClearAll={handleClearAll}
             />
           </motion.div>
         )}
@@ -105,6 +149,7 @@ export function DocumentsPage() {
               documentId={selectedDocumentId}
               documents={documents || []}
               onBack={() => setView("list")}
+              onDelete={(id) => handleDeleteDocument(id)}
             />
           </motion.div>
         )}
@@ -119,18 +164,10 @@ export function DocumentsPage() {
             className="flex-1 min-h-0 flex flex-col overflow-y-auto overflow-x-hidden hide-scrollbar"
           >
             <DocumentUploadExperience
-              onComplete={() => {
-                setView("list");
-                setPendingUploadFile(null);
-              }}
-              onCancel={() => {
-                setPendingUploadFile(null);
-                if (searchParams.get("action") === "upload") {
-                  router.push("/demo");
-                } else {
-                  setView("list");
-                }
-              }}
+              initialFile={pendingUploadFile}
+              onUploadFile={handleUploadFile}
+              onComplete={handleComplete}
+              onCancel={handleCancel}
             />
           </motion.div>
         )}

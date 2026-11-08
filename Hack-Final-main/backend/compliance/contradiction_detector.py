@@ -1,16 +1,28 @@
 import json
 from typing import Dict, Any, List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from backend.ai.llm_client import PromptLoader, llm_client
 
 class DetectedContradiction(BaseModel):
-    severity: str = Field(pattern="^(Critical|Major|Minor|Informational)$")
-    description: str
-    affected_assets: List[str]
-    affected_documents: List[str]
-    evidence: str
-    suggested_resolution: str
-    responsible_department: str
+    severity: str = Field(default="Major")
+    description: str = Field(default="Operational contradiction identified.")
+    affected_assets: List[str] = Field(default_factory=list)
+    affected_documents: List[str] = Field(default_factory=list)
+    evidence: str = Field(default="Document comparative evidence.")
+    suggested_resolution: str = Field(default="Review and align conflicting SOPs.")
+    responsible_department: str = Field(default="Process Safety")
+
+    @field_validator("severity", mode="before")
+    @classmethod
+    def normalize_severity(cls, v: Any) -> str:
+        s = str(v).capitalize()
+        if s in ["Critical", "Major", "Minor", "Informational"]:
+            return s
+        if "crit" in s.lower() or "high" in s.lower():
+            return "Critical"
+        if "warn" in s.lower() or "med" in s.lower():
+            return "Major"
+        return "Minor"
 
 class ContradictionDetectionEngine:
     """
@@ -21,6 +33,9 @@ class ContradictionDetectionEngine:
         self.prompt_config = PromptLoader.load_prompt("contradiction_detection")
 
     def detect_contradictions(self, asset_context: str, excerpts: List[Dict[str, str]]) -> List[Dict[str, Any]]:
+        if not excerpts:
+            return []
+
         user_prompt = self.prompt_config["user_prompt_template"].format(
             asset_context=asset_context,
             excerpts_json=json.dumps(excerpts, indent=2)

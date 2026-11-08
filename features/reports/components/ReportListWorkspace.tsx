@@ -167,6 +167,16 @@ export function ReportListWorkspace({ reports, stats, loading, onSelectReport, o
 
             </div>
           ))}
+
+          {filteredReports.length === 0 && (
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-slate-500">
+              <FileBarChart className="w-12 h-12 mb-3 opacity-40 text-pink-500" />
+              <p className="text-base font-semibold text-slate-300">No Executive Reports Generated</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mb-5">
+                No plant intelligence reports have been generated yet. Upload an industrial document or click Generate Intelligence above.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

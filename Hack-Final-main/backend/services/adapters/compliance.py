@@ -24,8 +24,8 @@ class ComplianceAdapter:
 
     def run_full_scan(self, org_id: str) -> Dict[str, Any]:
         """Run contradictions + drift + mortality in one call."""
-        nodes = list(graph_builder.mock_graph_store.get("nodes", {}).values())
-        relationships = graph_builder.mock_graph_store.get("relationships", [])
+        nodes = graph_builder.get_nodes(org_id)
+        relationships = graph_builder.get_relationships(org_id)
 
         contradictions = self.detect_contradictions(f"Organization {org_id} Assets", [])
         drift = self.evaluate_drift(org_id, [], nodes, relationships)

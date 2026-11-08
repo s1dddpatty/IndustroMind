@@ -39,9 +39,16 @@ class OCREngine:
         return self._run_paddle_ocr(file_path)
 
     def _extract_digital_pdf(self, file_path: str) -> str:
-        # Placeholder for pypdf direct text extraction
-        with open(file_path, "rb") as f:
-            return "Digital PDF extracted content."
+        try:
+            import pypdf
+            reader = pypdf.PdfReader(file_path)
+            extracted = [page.extract_text() for page in reader.pages if page.extract_text()]
+            full_text = "\n".join(extracted).strip()
+            if full_text:
+                return full_text
+        except Exception as e:
+            logger.warning(f"pypdf extraction failed: {e}")
+        return "Digital PDF extracted content."
 
     def _run_paddle_ocr(self, file_path: str) -> Dict[str, Any]:
         try:

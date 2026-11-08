@@ -63,7 +63,11 @@ export function ComplianceListWorkspace({ rules, stats, loading, onSelectRule, o
           <button className={`p-2 rounded-xl bg-slate-900/50 border ${tokens.card.border} hover:bg-slate-800 transition-colors text-slate-300`}>
             <Filter className="w-4 h-4" />
           </button>
-          <button className={`p-2 rounded-xl bg-slate-900/50 border ${tokens.card.border} hover:bg-slate-800 transition-colors text-slate-300`}>
+          <button 
+            onClick={() => window.print()}
+            title="Export Compliance Audit Report"
+            className={`p-2 rounded-xl bg-slate-900/50 border ${tokens.card.border} hover:bg-slate-800 transition-colors text-slate-300 cursor-pointer`}
+          >
             <Download className="w-4 h-4" />
           </button>
           <button 
@@ -204,6 +208,16 @@ export function ComplianceListWorkspace({ rules, stats, loading, onSelectRule, o
 
             </div>
           ))}
+
+          {filteredRules.length === 0 && (
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-slate-500">
+              <ShieldCheck className="w-12 h-12 mb-3 opacity-40 text-orange-500" />
+              <p className="text-base font-semibold text-slate-300">No Compliance Violations or Contradictions</p>
+              <p className="text-xs text-slate-500 mt-1 max-w-sm mb-5">
+                All standards and SOPs are currently idle. Upload a compliance document or regulation to run real-time neuro-symbolic integrity analysis.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>

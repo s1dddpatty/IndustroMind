@@ -29,5 +29,21 @@ export const documentRepository = {
     } catch (error) {
       throw handleApiError(error);
     }
+  },
+
+  async deleteDocument(id: string): Promise<void> {
+    try {
+      await apiClient.delete(`/api/v1/documents/${id}`);
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  },
+
+  async clearAllDocuments(): Promise<void> {
+    try {
+      await apiClient.delete('/api/v1/documents');
+    } catch (error) {
+      throw handleApiError(error);
+    }
   }
 };

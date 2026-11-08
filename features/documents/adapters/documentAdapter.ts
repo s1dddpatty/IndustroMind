@@ -3,11 +3,21 @@ import { DocumentData, DocumentStatus, DocumentType } from "../../dashboard/cons
 
 export const documentAdapter = {
   adaptDocumentList(response: DocumentsResponseDTO): DocumentData[] {
-    const backendDocs = response.items || (Array.isArray(response.data) ? response.data : response.data?.items) || [];
-    
+    const backendDocs = response.items || (Array.isArray(response.data) ? response.data : (response.data as any)?.items || (response.data as any)?.documents) || [];
+
     return backendDocs.map(d => {
       const isCompleted = (d.status || "").toLowerCase() === "completed";
-      
+      let events: string[] = [];
+      if (Array.isArray(d.processing_events)) {
+        events = d.processing_events;
+      } else if (typeof d.processing_events === "string") {
+        try {
+          events = JSON.parse(d.processing_events);
+        } catch {
+          events = [];
+        }
+      }
+
       return {
         id: d.id,
         // Backend mapping
@@ -17,11 +27,11 @@ export const documentAdapter = {
         status: (d.status || "Completed") as DocumentStatus,
         uploadedAt: d.created_at || new Date().toISOString(),
         confidence: Math.round((d.classification_confidence || d.confidence_score || (isCompleted ? 0.95 : 0)) * 100),
-        
+
         // --- PLACEHOLDERS for future backend additions ---
         // asset: Backend currently does not attach documents to assets. 
         //        Future endpoint: /api/v1/documents/:id/metadata
-        asset: "General", 
+        asset: "General",
         // uploadedBy: Backend field currently unused or unreliable in this struct.
         //        Future endpoint enhancement needed on GET /api/v1/documents/
         uploadedBy: "System",
@@ -42,7 +52,7 @@ export const documentAdapter = {
         // relatedEntities: Awaiting Knowledge Graph link endpoint.
         relatedEntities: [],
         complianceReferences: [],
-        processingTimeline: (d.processing_events || []).map(evt => ({ timestamp: new Date().toISOString(), action: evt })),
+        processingTimeline: events.map(evt => ({ timestamp: new Date().toISOString(), action: evt })),
         aiInsights: [],
         suggestedActions: [],
         owner: "System",

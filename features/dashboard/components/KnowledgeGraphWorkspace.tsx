@@ -1,19 +1,65 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { ArrowLeft, Search, Filter } from "lucide-react";
-import { GraphNode, NodeType, KNOWLEDGE_GRAPH_DATA } from "../constants/knowledgeGraphData";
+import { ArrowLeft, Search, Filter, Network } from "lucide-react";
+import { GraphData, GraphNode, GraphEdge, NodeType, NodeStatus, KNOWLEDGE_GRAPH_DATA } from "../constants/knowledgeGraphData";
+import { graphService } from "@/features/knowledge-graph/services/graphService";
 import { ForceGraphRenderer } from "./ForceGraphRenderer";
 import { GraphNodeDetail } from "./GraphNodeDetail";
+import { useSystemDocuments } from "@/features/shared/hooks/useSystemDocuments";
 
 interface KnowledgeGraphWorkspaceProps {
   onBack: () => void;
 }
 
 export function KnowledgeGraphWorkspace({ onBack }: KnowledgeGraphWorkspaceProps) {
-  const data = KNOWLEDGE_GRAPH_DATA;
+  const { hasDocuments } = useSystemDocuments();
+  const [liveData, setLiveData] = useState<GraphData | null>(null);
+
+  const loadGraph = useCallback((force = false) => {
+    let isMounted = true;
+    graphService.fetchGraph(force).then(res => {
+      if (!isMounted) return;
+      if (!res || !res.nodes.length) {
+        setLiveData({ nodes: [], links: [] });
+        return;
+      }
+      const mappedNodes: GraphNode[] = res.nodes.map(n => ({
+        id: n.id,
+        label: n.label,
+        type: (n.category as NodeType) || "Equipment",
+        status: (n.status as NodeStatus) || "Healthy",
+        description: n.aiSummary || "",
+        confidence: n.health?.confidence,
+        health: n.health?.coverage,
+        priority: n.status === "Critical" ? "Critical" : n.status === "Warning" ? "High" : "Low",
+      }));
+      const mappedLinks: GraphEdge[] = res.edges.map(e => ({
+        id: e.id,
+        source: typeof e.source === "object" ? (e.source as any).id : e.source,
+        target: typeof e.target === "object" ? (e.target as any).id : e.target,
+        relationship: e.relationship,
+      }));
+      setLiveData({ nodes: mappedNodes, links: mappedLinks });
+    }).catch(err => {
+      console.warn("Could not load live graph data for workspace:", err);
+      setLiveData({ nodes: [], links: [] });
+    });
+    return () => { isMounted = false; };
+  }, []);
+
+  useEffect(() => {
+    loadGraph(true);
+    const handleUpdate = () => loadGraph(true);
+    window.addEventListener("documentsUpdated", handleUpdate);
+    return () => {
+      window.removeEventListener("documentsUpdated", handleUpdate);
+    };
+  }, [loadGraph]);
+
+  const data: GraphData = hasDocuments ? (liveData || { nodes: [], links: [] }) : { nodes: [], links: [] };
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
@@ -104,20 +150,28 @@ export function KnowledgeGraphWorkspace({ onBack }: KnowledgeGraphWorkspaceProps
       </div>
 
       {/* Main Graph Area */}
-      <div className={`w-full h-[700px] relative rounded-xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden`}>
-        <ForceGraphRenderer 
-          data={filteredData} 
-          interactive={true} 
-          onNodeClick={setSelectedNode} 
-          selectedNodeId={selectedNode?.id} 
-        />
-        
-        {/* Node Detail Slide-in Panel */}
-        <GraphNodeDetail 
-          node={selectedNode} 
-          onClose={() => setSelectedNode(null)} 
-        />
-      </div>
+      {filteredData.nodes.length === 0 ? (
+        <div className={`w-full h-[600px] flex flex-col items-center justify-center rounded-xl border ${tokens.card.border} ${tokens.card.background} text-slate-500`}>
+          <Network className="w-12 h-12 mb-3 opacity-30 text-emerald-500" />
+          <p className="text-base font-medium text-slate-300">No Knowledge Graph Entities</p>
+          <p className="text-sm text-slate-500 mt-1">Upload a compliance or engineering document to populate the knowledge graph.</p>
+        </div>
+      ) : (
+        <div className={`w-full h-[700px] relative rounded-xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden`}>
+          <ForceGraphRenderer 
+            data={filteredData} 
+            interactive={true} 
+            onNodeClick={setSelectedNode} 
+            selectedNodeId={selectedNode?.id} 
+          />
+          
+          {/* Node Detail Slide-in Panel */}
+          <GraphNodeDetail 
+            node={selectedNode} 
+            onClose={() => setSelectedNode(null)} 
+          />
+        </div>
+      )}
     </div>
   );
 }

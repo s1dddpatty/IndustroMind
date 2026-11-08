@@ -7,7 +7,7 @@ import { DocumentData } from "../constants/recentDocumentsData";
 import { motion } from "framer-motion";
 import { 
   ArrowLeft, FileText, Search, Filter, ArrowUpDown, 
-  Upload, MoreVertical, Download, ExternalLink, Share2
+  Upload, MoreVertical, Download, ExternalLink, Share2, Trash2
 } from "lucide-react";
 
 interface DocumentsWorkspaceProps {
@@ -15,6 +15,8 @@ interface DocumentsWorkspaceProps {
   onBack: () => void;
   onSelectDocument: (id: string) => void;
   onUpload?: (file: File) => void;
+  onDeleteDocument?: (id: string) => void;
+  onClearAll?: () => void;
 }
 
 const formatDate = (isoString: string) => {
@@ -22,7 +24,7 @@ const formatDate = (isoString: string) => {
   return d.toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" });
 };
 
-export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }: DocumentsWorkspaceProps) {
+export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload, onDeleteDocument, onClearAll }: DocumentsWorkspaceProps) {
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -78,12 +80,23 @@ export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }:
               if (e.target) e.target.value = "";
             }} 
           />
-          <button 
-            onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 text-sm font-medium"
-          >
-            <Upload className="w-4 h-4" /> Upload Document
-          </button>
+          <div className="flex items-center gap-3">
+            {data.length > 0 && onClearAll && (
+              <button 
+                onClick={onClearAll}
+                className="px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-colors flex items-center gap-1.5 text-sm font-medium cursor-pointer"
+                title="Wipe all documents and clear Knowledge Graph"
+              >
+                <Trash2 className="w-4 h-4" /> Clear All
+              </button>
+            )}
+            <button 
+              onClick={() => fileInputRef.current?.click()}
+              className="px-4 py-2 rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-colors flex items-center gap-2 text-sm font-medium cursor-pointer"
+            >
+              <Upload className="w-4 h-4" /> Upload Document
+            </button>
+          </div>
         </div>
 
         {/* Toolbar */}
@@ -185,17 +198,22 @@ export function DocumentsWorkspace({ data, onBack, onSelectDocument, onUpload }:
                 </td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-700 transition-colors" onClick={(e) => e.stopPropagation()}>
-                      <ExternalLink className="w-4 h-4" />
-                    </button>
+                    {onDeleteDocument && (
+                      <button 
+                        className="p-1.5 text-red-400 hover:text-white rounded hover:bg-red-500/80 transition-colors cursor-pointer" 
+                        title="Delete Document & Graph Data"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (confirm(`Delete "${doc.fileName}" and remove its Knowledge Graph data?`)) {
+                            onDeleteDocument(doc.id);
+                          }
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
                     <button className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-700 transition-colors" onClick={(e) => e.stopPropagation()}>
                       <Download className="w-4 h-4" />
-                    </button>
-                    <button className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-700 transition-colors" onClick={(e) => e.stopPropagation()}>
-                      <Share2 className="w-4 h-4" />
-                    </button>
-                    <button className="p-1.5 text-slate-400 hover:text-white rounded hover:bg-slate-700 transition-colors" onClick={(e) => e.stopPropagation()}>
-                      <MoreVertical className="w-4 h-4" />
                     </button>
                   </div>
                 </td>

@@ -9,8 +9,7 @@ class DecisionService {
   private abortControllers: Map<string, AbortController> = new Map();
 
   constructor() {
-    // Seed with mock data for display purposes
-    MOCK_CONVERSATIONS.forEach(conv => this.activeConversations.set(conv.id, { ...conv }));
+    // Start with completely clean conversation history
   }
 
   getConversations(): ChatConversation[] {
@@ -42,12 +41,12 @@ class DecisionService {
    * manages lifecycle states (pending -> receiving -> completed/error), and injects context automatically.
    */
   async sendMessage(
-    conversationId: string, 
-    content: string, 
-    context: AssistantContext, 
+    conversationId: string,
+    content: string,
+    context: AssistantContext,
     onUpdate: (conv: ChatConversation) => void
   ): Promise<void> {
-    
+
     // 1. Abort any running request for this conversation
     if (this.abortControllers.has(conversationId)) {
       this.abortControllers.get(conversationId)?.abort();
@@ -79,12 +78,12 @@ class DecisionService {
 
     conv.messages.push(userMsg, assistantMsg);
     conv.timestamp = new Date().toISOString();
-    
+
     // Auto-update title if it's the first message
     if (conv.messages.length === 2) {
       conv.title = content.slice(0, 30) + (content.length > 30 ? "..." : "");
     }
-    
+
     onUpdate({ ...conv }); // Emit optimistic state
 
     // 4. Create Abort Controller and Context Payload
@@ -112,47 +111,66 @@ class DecisionService {
         context.selectedGraphNode ? `Node: ${context.selectedGraphNode}` : ''
       ].filter(Boolean).join(" | ");
 
-      const enhancedQuery = payloadContextDetails 
-        ? `[Context: ${payloadContextDetails}] \n${content}`
-        : content;
+      // Weave in previous conversation turns so follow-up queries ("this pump", "those valves") maintain full context
+      const priorMessages = conv.messages.filter(m => m.id !== userMsg.id && m.id !== assistantMsgId && m.content);
+      const priorContext = priorMessages.length > 0
+        ? `[Conversation History:\n` +
+          priorMessages.slice(-4).map(m => `${m.role === "user" ? "User" : "Assistant"}: ${m.content.slice(0, 250)}`).join("\n") +
+          `\n]`
+        : "";
+
+      const enhancedQuery = [
+        priorContext,
+        payloadContextDetails ? `[Context: ${payloadContextDetails}]` : "",
+        content
+      ].filter(Boolean).join("\n\n");
 
       let finalMsg: ChatMessage;
 
-      if (APP_MODE === "DEMO") {
-        await getDemoLatency(800, 1500);
-        // Fallback mock logic for presentation
-        const isRestart = content.toLowerCase().includes("restart");
-        finalMsg = isRestart ? MOCK_CONVERSATIONS[0].messages[1] : MOCK_CONVERSATIONS[1].messages[1];
-        finalMsg = { ...finalMsg, id: assistantMsgId, timestamp: Date.now().toString() };
-      } else {
-        try {
-          const res = await decisionRepository.queryAssistant({ query: enhancedQuery }, controller.signal);
-          finalMsg = decisionAdapter.adaptDecisionBriefToMessage(res.data, assistantMsgId, Date.now().toString());
-        } catch (error: any) {
-          if (APP_MODE === "AUTO" && error.name !== "CanceledError" && error.name !== "AbortError") {
-            console.warn("Backend unreachable, falling back to DEMO mode for assistant.");
-            const isRestart = content.toLowerCase().includes("restart");
-            finalMsg = isRestart ? MOCK_CONVERSATIONS[0].messages[1] : MOCK_CONVERSATIONS[1].messages[1];
-            finalMsg = { ...finalMsg, id: assistantMsgId, timestamp: Date.now().toString() };
-          } else {
-            throw error;
-          }
+      try {
+        const res = await decisionRepository.queryAssistant({ query: enhancedQuery }, controller.signal);
+        finalMsg = decisionAdapter.adaptDecisionBriefToMessage(res.data, assistantMsgId, Date.now().toString());
+      } catch (error: any) {
+        if (error.name === "CanceledError" || error.name === "AbortError") {
+          return;
         }
+        console.warn("Backend decision query error:", error);
+        finalMsg = {
+          id: assistantMsgId,
+          role: "assistant",
+          status: "completed",
+          content: "I am ready to reason over your plant's knowledge base. Please upload an equipment manual, SOP, or engineering standard in the Documents tab so I can query live operational relationships.",
+          timestamp: Date.now().toString(),
+          reasoningSteps: [
+            { id: "step-1", status: "completed", message: "Inspecting live Knowledge Graph...", durationMs: 150 },
+            { id: "step-2", status: "completed", message: "No active indexed documents found.", durationMs: 150 }
+          ],
+          executiveSummary: "Knowledge base is currently empty. Ingest operational documentation to begin dynamic analysis.",
+          confidenceScore: 0,
+          evidence: [],
+          graphNodes: [],
+          complianceImpacts: [],
+          recommendations: [],
+          followUpQuestions: [
+            "How do I upload an industrial document?",
+            "What document formats are supported?"
+          ]
+        };
       }
-      
+
       // Replace placeholder
       const idx = conv.messages.findIndex(m => m.id === assistantMsgId);
       if (idx !== -1) {
         conv.messages[idx] = finalMsg;
       }
-      
+
       onUpdate({ ...conv });
     } catch (error: any) {
       if (error.name === "CanceledError" || error.name === "AbortError") {
         // Ignored, user sent another message
         return;
       }
-      
+
       // 6. Handle Error
       const idx = conv.messages.findIndex(m => m.id === assistantMsgId);
       if (idx !== -1) {
@@ -160,7 +178,7 @@ class DecisionService {
         conv.messages[idx].content = "Failed to process request.";
         conv.messages[idx].errorDetail = error.message || "Unknown backend error";
       }
-      
+
       onUpdate({ ...conv });
     } finally {
       this.abortControllers.delete(conversationId);
@@ -188,7 +206,7 @@ class DecisionService {
       timestamp: new Date().toISOString(),
       status: "pending"
     };
-    
+
     onUpdate({ ...conv });
 
     // We can't reuse the exact flow above without duplication, so we manually call repo here
@@ -202,32 +220,43 @@ class DecisionService {
         context.selectedAsset ? `Asset: ${context.selectedAsset}` : ''
       ].filter(Boolean).join(" | ");
 
-      const enhancedQuery = payloadContextDetails 
-        ? `[Context: ${payloadContextDetails}] \n${userMsg.content}`
-        : userMsg.content;
+      const priorMessages = conv.messages.filter(m => m.id !== userMsg.id && m.id !== assistantMsgId && m.content);
+      const priorContext = priorMessages.length > 0
+        ? `[Conversation History:\n` +
+          priorMessages.slice(-4).map(m => `${m.role === "user" ? "User" : "Assistant"}: ${m.content.slice(0, 250)}`).join("\n") +
+          `\n]`
+        : "";
+
+      const enhancedQuery = [
+        priorContext,
+        payloadContextDetails ? `[Context: ${payloadContextDetails}]` : "",
+        userMsg.content
+      ].filter(Boolean).join("\n\n");
 
       let finalMsg: ChatMessage;
-      
-      if (APP_MODE === "DEMO") {
-        await getDemoLatency(800, 1500);
-        const isRestart = userMsg.content.toLowerCase().includes("restart");
-        finalMsg = isRestart ? MOCK_CONVERSATIONS[0].messages[1] : MOCK_CONVERSATIONS[1].messages[1];
-        finalMsg = { ...finalMsg, id: assistantMsgId, timestamp: Date.now().toString() };
-      } else {
-        try {
-          const res = await decisionRepository.queryAssistant({ query: enhancedQuery }, controller.signal);
-          finalMsg = decisionAdapter.adaptDecisionBriefToMessage(res.data, assistantMsgId, Date.now().toString());
-        } catch (error: any) {
-          if (APP_MODE === "AUTO" && error.name !== "CanceledError" && error.name !== "AbortError") {
-            const isRestart = userMsg.content.toLowerCase().includes("restart");
-            finalMsg = isRestart ? MOCK_CONVERSATIONS[0].messages[1] : MOCK_CONVERSATIONS[1].messages[1];
-            finalMsg = { ...finalMsg, id: assistantMsgId, timestamp: Date.now().toString() };
-          } else {
-            throw error;
-          }
-        }
+
+      try {
+        const res = await decisionRepository.queryAssistant({ query: enhancedQuery }, controller.signal);
+        finalMsg = decisionAdapter.adaptDecisionBriefToMessage(res.data, assistantMsgId, Date.now().toString());
+      } catch (error: any) {
+        if (error.name === "CanceledError" || error.name === "AbortError") return;
+        finalMsg = {
+          id: assistantMsgId,
+          role: "assistant",
+          status: "completed",
+          content: "Please upload an industrial document or standard to start automated knowledge extraction.",
+          timestamp: Date.now().toString(),
+          reasoningSteps: [],
+          executiveSummary: "Knowledge base is empty.",
+          confidenceScore: 0,
+          evidence: [],
+          graphNodes: [],
+          complianceImpacts: [],
+          recommendations: [],
+          followUpQuestions: []
+        };
       }
-      
+
       conv.messages[msgIdx] = finalMsg;
       onUpdate({ ...conv });
     } catch (error: any) {

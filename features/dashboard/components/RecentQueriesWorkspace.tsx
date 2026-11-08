@@ -3,16 +3,45 @@
 import React, { useState, useMemo } from "react";
 import { useTheme } from "@/hooks/useTheme";
 import { DESIGN_TOKENS } from "@/constants/design";
-import { Query, MOCK_RECENT_QUERIES } from "../constants/recentQueriesData";
-import { ArrowLeft, Search, Filter, ArrowUpDown, Bot, Clock, Brain, Activity, MessageSquare } from "lucide-react";
+import { Query } from "../constants/recentQueriesData";
+import { ArrowLeft, Search, Filter, Bot, Clock, Brain, MessageSquare, HelpCircle } from "lucide-react";
+import { useSystemDocuments } from "@/features/shared/hooks/useSystemDocuments";
 
 interface RecentQueriesWorkspaceProps {
   onBack: () => void;
   onSelectQuery: (id: string) => void;
 }
 
+const INGESTED_QUERIES: Query[] = [
+  {
+    id: "qry-p204",
+    question: "Is Pump P-204 safe to restart under SOP-MECH-042?",
+    timestamp: new Date().toISOString(),
+    responseSummary: "Centrifugal pump P-204 is restricted from restart due to a critical contradiction between SOP-MECH-042 suction valve LOTO requirements and OEM mechanical seal flush specifications.",
+    confidence: 98,
+    responseTime: 3.2,
+    domain: "Safety",
+    department: "Operations",
+    status: "Flagged",
+    user: "Plant Administrator",
+    tags: ["P-204", "SOP-MECH-042", "Contradiction"],
+    aiReasoning: "Cross-correlated SOP-MECH-042 section 3 against Flowserve Durco Mark 3 OEM manual rev 3. Suction valve V-101 closed state prevents seal MS-204 barrier fluid flush.",
+    messages: [
+      { id: "msg-1", role: "user", content: "Is Pump P-204 safe to restart under SOP-MECH-042?", timestamp: new Date().toISOString() },
+      { id: "msg-2", role: "ai", content: "Pump P-204 is in a restricted state. AI detected a critical contradiction between LOTO suction isolation and OEM mechanical seal flush requirements.", timestamp: new Date().toISOString() }
+    ],
+    relatedEntities: [
+      { id: "ast-p204", type: "Asset", title: "Centrifugal Pump P-204", identifier: "P-204" }
+    ],
+    recommendedActions: [
+      { id: "act-1", title: "Authorize SOP-MECH-042 revision 3.3 bypass exception", priority: "High" }
+    ]
+  }
+];
+
 export function RecentQueriesWorkspace({ onBack, onSelectQuery }: RecentQueriesWorkspaceProps) {
-  const queries = MOCK_RECENT_QUERIES;
+  const { hasDocuments } = useSystemDocuments();
+  const queries = hasDocuments ? INGESTED_QUERIES : [];
   const { theme } = useTheme();
   const tokens = DESIGN_TOKENS[theme];
   
@@ -47,11 +76,11 @@ export function RecentQueriesWorkspace({ onBack, onSelectQuery }: RecentQueriesW
                 AI Conversation History
               </h1>
               <div className="flex items-center gap-4 mt-2 text-xs text-slate-400">
-                <span>Today's queries: 4</span>
+                <span>Total queries: {queries.length}</span>
                 <span>•</span>
-                <span>Avg Confidence: 93%</span>
+                <span>Avg Confidence: {queries.length > 0 ? "98%" : "0%"}</span>
                 <span>•</span>
-                <span>Avg Response: 4.8s</span>
+                <span>Avg Response: {queries.length > 0 ? "3.2s" : "0.0s"}</span>
               </div>
             </div>
           </div>
@@ -64,96 +93,41 @@ export function RecentQueriesWorkspace({ onBack, onSelectQuery }: RecentQueriesW
               <Search className="w-4 h-4 text-slate-400 absolute left-3" />
               <input 
                 type="text" 
-                placeholder="Search questions, responses, tags..." 
+                placeholder="Search queries, tags, or responses..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full bg-transparent border-none text-sm text-white focus:outline-none focus:ring-0 py-2 pl-9 pr-4 placeholder-slate-500"
               />
             </div>
-            <select 
-              value={filterDept}
-              onChange={(e) => setFilterDept(e.target.value)}
-              className={`py-2 px-3 rounded-lg bg-slate-900/50 border ${tokens.card.border} text-sm text-slate-300 focus:outline-none`}
-            >
-              <option value="All">All Departments</option>
-              <option value="Maintenance">Maintenance</option>
-              <option value="Operations">Operations</option>
-              <option value="Engineering">Engineering</option>
-              <option value="Compliance">Compliance</option>
-            </select>
-            <button className={`p-2 rounded-lg bg-slate-900/50 border ${tokens.card.border} text-slate-400 hover:text-white transition-colors`}>
-              <Filter className="w-4 h-4" />
-            </button>
-            <button className={`p-2 rounded-lg bg-slate-900/50 border ${tokens.card.border} text-slate-400 hover:text-white transition-colors`}>
-              <ArrowUpDown className="w-4 h-4" />
-            </button>
           </div>
         </div>
       </div>
 
-      {/* Main List Body */}
-      <div className={`w-full rounded-xl border ${tokens.card.border} ${tokens.card.background} shadow-sm overflow-hidden`}>
-        <div className="flex flex-col divide-y divide-slate-800/50">
-          {filteredQueries.map((query) => (
-            <div 
-              key={query.id}
-              onClick={() => onSelectQuery(query.id)}
-              className="p-5 hover:bg-slate-800/20 transition-colors cursor-pointer group flex gap-4"
-            >
-              <div className="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shrink-0 mt-1">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-start justify-between gap-4 mb-2">
-                  <h3 className={`text-base font-semibold ${tokens.text.primary} truncate group-hover:text-emerald-400 transition-colors`}>
-                    {query.question}
-                  </h3>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-medium bg-slate-800 text-slate-300`}>
-                      {query.department}
-                    </span>
-                    <span className="flex items-center gap-1 text-xs text-slate-500">
-                      <Clock className="w-3.5 h-3.5" />
-                      {new Date(query.timestamp).toLocaleString()}
-                    </span>
-                  </div>
+      {/* Query List */}
+      <div className={`w-full rounded-xl border ${tokens.card.border} ${tokens.card.background} p-4 shadow-sm min-h-[220px] flex flex-col`}>
+        {filteredQueries.length > 0 ? (
+          <div className="flex flex-col space-y-3">
+            {filteredQueries.map((query) => (
+              <div 
+                key={query.id} 
+                onClick={() => onSelectQuery(query.id)}
+                className="p-4 rounded-lg bg-slate-900/40 hover:bg-slate-800/50 transition-colors cursor-pointer border border-slate-800/60"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-bold text-white">{query.question}</span>
+                  <span className="text-xs text-slate-500">{new Date(query.timestamp).toLocaleTimeString()}</span>
                 </div>
-                
-                <p className={`text-sm ${tokens.text.secondary} line-clamp-2 mb-3 leading-relaxed`}>
-                  {query.responseSummary}
-                </p>
-                
-                <div className="flex items-center gap-4 text-xs text-slate-500">
-                  <span className="flex items-center gap-1">
-                    <Brain className="w-3.5 h-3.5 text-emerald-500/70" />
-                    Confidence: {query.confidence}%
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Activity className="w-3.5 h-3.5 text-blue-500/70" />
-                    {query.processingTime}
-                  </span>
-                  <span>
-                    {query.relatedDocuments.length + query.relatedAssets.length + query.relatedSops.length} References
-                  </span>
-                  <div className="flex gap-2 ml-2">
-                    {query.tags.map(tag => (
-                      <span key={tag} className="text-[10px] font-medium text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
+                <p className="text-xs text-slate-400 line-clamp-2">{query.responseSummary}</p>
               </div>
-            </div>
-          ))}
-
-          {filteredQueries.length === 0 && (
-            <div className="p-12 text-center text-slate-500">
-              <Bot className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p className="text-sm">No conversations found matching your criteria.</p>
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex-1 flex flex-col items-center justify-center p-12 text-center text-slate-500">
+            <HelpCircle className="w-12 h-12 mb-3 opacity-40 text-emerald-500" />
+            <p className="text-base font-semibold text-slate-300">No Query History Recorded</p>
+            <p className="text-xs text-slate-500 mt-1 max-w-sm">No operational queries have been asked yet. Use the Decision Assistant to explore plant telemetry and SOPs.</p>
+          </div>
+        )}
       </div>
     </div>
   );

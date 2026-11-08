@@ -1,33 +1,64 @@
 import os
 import hashlib
+import logging
+import httpx
+from pathlib import Path
 from typing import List
+from dotenv import load_dotenv
+
+# Ensure .env is loaded
+load_dotenv(Path(__file__).resolve().parent.parent.parent / ".env")
+
+logger = logging.getLogger("neuroplant.embeddings")
 
 class EmbeddingGenerator:
     """
-    Generates text embeddings using OpenAI's text-embedding-3-large model.
-    Includes deterministic fallback for offline testing and mock verification.
+    Generates text embeddings using Gemini or OpenAI.
+    Includes deterministic fallback for offline testing.
     """
-    def __init__(self, model: str = "text-embedding-3-large", dimensions: int = 3072):
+    def __init__(self, model: str = "gemini-embedding-001", dimensions: int = 3072):
         self.model = model
         self.dimensions = dimensions
-        self.api_key = os.getenv("OPENAI_API_KEY")
 
     def generate_embedding(self, text: str) -> List[float]:
-        mock_mode = os.getenv("NEUROPLANT_MOCK_MODE", os.getenv("MOCK_MODE", "true")).lower() == "true"
-        if not self.api_key or mock_mode:
-            return self._generate_deterministic_mock_embedding(text)
+        gemini_key = os.getenv("GEMINI_API_KEY")
+        openai_key = os.getenv("OPENAI_API_KEY")
+        mock_mode = os.getenv("NEUROPLANT_MOCK_MODE", os.getenv("MOCK_MODE", "false")).lower() == "true"
         
-        try:
-            from openai import OpenAI
-            client = OpenAI(api_key=self.api_key)
-            response = client.embeddings.create(
-                input=[text],
-                model=self.model,
-                dimensions=self.dimensions
-            )
-            return response.data[0].embedding
-        except Exception as e:
+        if mock_mode:
             return self._generate_deterministic_mock_embedding(text)
+
+        # 1. Try Gemini Embeddings (3072 dimensions)
+        if gemini_key:
+            try:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-001:embedContent?key={gemini_key}"
+                payload = {
+                    "content": {"parts": [{"text": text[:2000]}]}
+                }
+                with httpx.Client(timeout=15.0) as client:
+                    resp = client.post(url, json=payload)
+                    if resp.status_code == 200:
+                        values = resp.json().get("embedding", {}).get("values", [])
+                        if values:
+                            return values
+            except Exception as e:
+                logger.warning(f"Gemini embedding failed: {e}")
+
+        # 2. Try OpenAI Embeddings
+        if openai_key:
+            try:
+                from openai import OpenAI
+                client = OpenAI(api_key=openai_key)
+                response = client.embeddings.create(
+                    input=[text[:2000]],
+                    model="text-embedding-3-large",
+                    dimensions=self.dimensions
+                )
+                return response.data[0].embedding
+            except Exception as e:
+                logger.warning(f"OpenAI embedding failed: {e}")
+
+        return self._generate_deterministic_mock_embedding(text)
 
     def generate_embeddings_batch(self, texts: List[str]) -> List[List[float]]:
         return [self.generate_embedding(t) for t in texts]
